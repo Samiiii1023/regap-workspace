@@ -24,7 +24,6 @@
 	"lint-staged": {
 		"*.{js,ts,jsx,tsx}": [
 			"biome check --write"
-
 		]
 	}
 }
