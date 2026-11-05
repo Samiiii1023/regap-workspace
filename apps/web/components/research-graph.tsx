@@ -77,9 +77,7 @@ export function ResearchGraph({
 
 	const nodes = useMemo<GraphNode[]>(() => {
 		const visibleGaps = gaps.slice(0, 5);
-		const linkedPaperIds = new Set(
-			visibleGaps.flatMap((gap) => gap.sourceIds),
-		);
+		const linkedPaperIds = new Set(visibleGaps.flatMap((gap) => gap.sourceIds));
 		const prioritizedPapers = [
 			...papers.filter((paper) => linkedPaperIds.has(paper.id)),
 			...papers.filter((paper) => !linkedPaperIds.has(paper.id)),
@@ -97,7 +95,8 @@ export function ResearchGraph({
 		});
 
 		const gapNodes = visibleGaps.map((gap, index) => {
-			const angle = (index * Math.PI * 2) / Math.max(visibleGaps.length, 2) + 0.5;
+			const angle =
+				(index * Math.PI * 2) / Math.max(visibleGaps.length, 2) + 0.5;
 			return {
 				id: gap.id,
 				title: gap.title,
@@ -317,7 +316,8 @@ export function ResearchGraph({
 				</fieldset>
 			</div>
 			<p className="graph-hint">
-				Drag to orbit · Arrow keys on controls rotate · Select a node to inspect evidence
+				Drag to orbit · Arrow keys on controls rotate · Select a node to inspect
+				evidence
 			</p>
 		</div>
 	);
