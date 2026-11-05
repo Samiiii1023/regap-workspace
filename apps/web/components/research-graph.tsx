@@ -263,7 +263,7 @@ export function ResearchGraph({
 		}
 		const buffer = gl.createBuffer();
 		if (!buffer) return;
-		gl.useProgram(program);
+		gl["useProgram"](program);
 		const position = gl.getAttribLocation(program, "aPosition");
 		const color = gl.getAttribLocation(program, "aColor");
 		const setCamera = (name: string, value: number) =>
@@ -392,7 +392,7 @@ export function ResearchGraph({
 					}}
 				>
 					<div className="atlas-rings" aria-hidden="true" />
-					<canvas ref={canvas} className="atlas-webgl" aria-hidden="true" />
+					<canvas ref={canvas} className="atlas-webgl" />
 					{!gpuReady && (
 						<svg className="atlas-fallback-edges" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
 							{links.map((link) => {
