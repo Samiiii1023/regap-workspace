@@ -731,7 +731,7 @@ export function ImmersiveWorkspace() {
 						<span className="footer-avatar">R</span>
 						<div>
 							<strong>Re:Gap workspace</strong>
-							<span>Local prototype · Demo data</span>
+							<span className="sidebar-footer-status">Local prototype · Demo data</span>
 						</div>
 						<MoreHorizontal size={18} />
 					</div>
@@ -977,7 +977,7 @@ export function ImmersiveWorkspace() {
 														0{index + 1}
 													</span>
 													<span className="recent-paper-body">
-														<strong>{paper.title}</strong>
+														<strong className="recent-paper-title">{paper.title}</strong>
 														<small>
 															{paper.venue} <span>·</span> {paper.year}
 														</small>
