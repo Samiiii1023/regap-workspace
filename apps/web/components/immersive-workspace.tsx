@@ -367,6 +367,7 @@ export function ImmersiveWorkspace() {
 		setQuery("");
 		setGapFilter("all");
 		setMenuOpen(false);
+		setInspectorOpen(false);
 	}
 
 	function viewShortlist() {
