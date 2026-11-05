@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
+import { mkdir, readFile } from "node:fs/promises";
 
 const require = createRequire("/tmp/regap-playwright/smoke-test.cjs");
 const { chromium } = require("playwright");
@@ -9,6 +10,7 @@ const browser = await chromium.launch({
 });
 
 const baseURL = "http://127.0.0.1:3000";
+const screenshotDir = "artifacts/observatory";
 
 async function clickNav(page, name) {
 	await page
@@ -18,6 +20,7 @@ async function clickNav(page, name) {
 }
 
 async function run() {
+	await mkdir(screenshotDir, { recursive: true });
 	const context = await browser.newContext({
 		viewport: { width: 1440, height: 900 },
 		acceptDownloads: true,
@@ -45,6 +48,11 @@ async function run() {
 	);
 	// Both distinct themes must be interactive, persistent, and accessible.
 	assert.equal(await page.locator(".regap-app.regap-light").count(), 0);
+	await page.screenshot({
+		path: `${screenshotDir}/01-desktop-night.png`,
+		fullPage: true,
+		animations: "disabled",
+	});
 	await page.getByRole("button", { name: "Switch to light theme" }).click();
 	assert.equal(await page.locator(".regap-app.regap-light").count(), 1);
 	const lightSurface = await page
@@ -53,6 +61,11 @@ async function run() {
 			getComputedStyle(element).getPropertyValue("--rg-surface").trim(),
 		);
 	assert.equal(lightSurface, "#fffefa");
+	await page.screenshot({
+		path: `${screenshotDir}/02-desktop-daylight.png`,
+		fullPage: true,
+		animations: "disabled",
+	});
 	await page.reload();
 	await page.waitForFunction(() =>
 		document.querySelector(".regap-app.regap-light"),
@@ -154,7 +167,6 @@ async function run() {
 	const download = await downloadPromise;
 	const destination = "/tmp/regap-workspace-smoke.json";
 	await download.saveAs(destination);
-	const { readFile } = await import("node:fs/promises");
 	const exportData = JSON.parse(await readFile(destination, "utf8"));
 	assert.equal(exportData.customPapers.length, 1);
 	assert.equal(exportData.customGaps.length, 1);
@@ -185,6 +197,11 @@ async function run() {
 	const mobilePage = await mobile.newPage();
 	mobilePage.on("pageerror", (error) => errors.push(error.message));
 	await mobilePage.goto(baseURL, { waitUntil: "domcontentloaded" });
+	await mobilePage.screenshot({
+		path: `${screenshotDir}/03-mobile-night.png`,
+		fullPage: true,
+		animations: "disabled",
+	});
 	// The appearance control must remain available on narrow screens.
 	const mobileThemeToggle = mobilePage.getByRole("button", {
 		name: "Switch to light theme",
@@ -192,6 +209,11 @@ async function run() {
 	assert.equal(await mobileThemeToggle.isVisible(), true);
 	await mobileThemeToggle.click();
 	assert.equal(await mobilePage.locator(".regap-app.regap-light").count(), 1);
+	await mobilePage.screenshot({
+		path: `${screenshotDir}/04-mobile-daylight.png`,
+		fullPage: true,
+		animations: "disabled",
+	});
 	await mobilePage.getByRole("button", { name: "Open navigation" }).click();
 	assert.equal(
 		await mobilePage.getByRole("button", { name: "Gap explorer" }).isVisible(),
