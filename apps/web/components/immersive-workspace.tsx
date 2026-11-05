@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { AddGapDialog } from "@/components/add-gap-dialog";
-import { ResearchGraph } from "@/components/research-graph";
+import { AtlasOverview } from "@/components/atlas-overview";
 import { useModalFocus } from "@/hooks/use-modal-focus";
 import { usePersistentState } from "@/hooks/use-persistent-state";
 import { demoGaps, demoPapers, type Gap, type Paper } from "@/lib/demo-data";
@@ -66,9 +66,9 @@ const viewCopy: Record<
 > = {
 	overview: {
 		eyebrow: "RE:GAP / RESEARCH OBSERVATORY",
-		title: "The research observatory.",
+		title: "Knowledge constellation.",
 		description:
-			"A place to see the connections, test the assumptions, and ask what the evidence leaves unanswered.",
+			"A considered space to investigate literature, trace evidence, and turn questions into experiments."
 	},
 	library: {
 		eyebrow: "LITERATURE / 01",
@@ -232,7 +232,7 @@ export function ImmersiveWorkspace() {
 	const [importError, setImportError] = useState<string | null>(null);
 	const [appearance, setAppearance] = usePersistentState<"dark" | "light">(
 		"regap:appearance:v1",
-		"dark",
+		"light",
 		isAppearance,
 	);
 	const [savedGapIds, setSavedGapIds, savedReady] = usePersistentState<
@@ -322,6 +322,13 @@ export function ImmersiveWorkspace() {
 			: undefined;
 	const shortlistedGaps = gaps.filter((gap) => savedGapIds.includes(gap.id));
 	const dataReady = papersReady && gapsReady && savedReady && experimentsReady;
+
+	useEffect(() => {
+		// The inspector is part of the three-column layout on wide screens.
+		if (window.matchMedia("(min-width: 1351px)").matches) {
+			setInspectorOpen(true);
+		}
+	}, []);
 
 	useEffect(() => {
 		function onKeyDown(event: KeyboardEvent) {
@@ -826,7 +833,7 @@ export function ImmersiveWorkspace() {
 								<h1>
 									{view === "overview" ? (
 										<>
-											Research begins with <em>questions.</em>
+											Knowledge <em>constellation.</em>
 										</>
 									) : (
 										content.title
@@ -867,226 +874,19 @@ export function ImmersiveWorkspace() {
 						</div>
 
 						{view === "overview" && (
-							<>
-								<div className="overview-hero">
-									<div className="hero-copy">
-										<span className="hero-tag">
-											<Sparkles size={15} /> FIELD NOTES / 001
-										</span>
-										<h2>
-											Follow the evidence.
-											<br />
-											<span className="hero-gradient">Find the questions.</span>
-										</h2>
-										<p>
-											Trace ideas back to their sources, investigate what
-											remains unanswered, and turn promising questions into
-											falsifiable experiments. Novelty still needs verification.
-										</p>
-										<div className="hero-buttons">
-											<button
-												type="button"
-												className="primary-button"
-												onClick={() => navigate("gaps")}
-											>
-												Explore research gaps <ArrowRight size={17} />
-											</button>
-											<button
-												type="button"
-												className="ghost-button"
-												onClick={() => navigate("library")}
-											>
-												Browse library <ArrowUpRight size={16} />
-											</button>
-										</div>
-										<div className="hero-note">
-											<span className="hero-note-dot" />
-											Interactive perspective map · Illustrative sources
-										</div>
-										<div className="hero-readouts">
-											<div className="hero-readout">
-												<strong>
-													{papers.length.toString().padStart(2, "0")}
-												</strong>
-												<span>Papers mapped</span>
-											</div>
-											<div className="hero-readout">
-												<strong>
-													{gaps.length.toString().padStart(2, "0")}
-												</strong>
-												<span>Questions tracked</span>
-											</div>
-											<div className="hero-readout">
-												<strong>
-													{experiments.length.toString().padStart(2, "0")}
-												</strong>
-												<span>Experiment plans</span>
-											</div>
-										</div>
-									</div>
-									<ResearchGraph
-										papers={papers}
-										gaps={gaps}
-										selectedId={inspection?.id ?? null}
-										onSelectPaper={inspectPaper}
-										onSelectGap={inspectGap}
-									/>
-								</div>
-
-								<div className="metric-grid">
-									<div className="metric-card">
-										<div className="metric-top">
-											<span>Research papers</span>
-											<BookOpen size={19} />
-										</div>
-										<strong>{papers.length.toString().padStart(2, "0")}</strong>
-										<p>In your current library</p>
-										<span className="metric-accent metric-accent--purple" />
-									</div>
-									<div className="metric-card">
-										<div className="metric-top">
-											<span>Candidate gaps</span>
-											<FolderSearch size={19} />
-										</div>
-										<strong>{gaps.length.toString().padStart(2, "0")}</strong>
-										<p>Awaiting deeper validation</p>
-										<span className="metric-accent metric-accent--cyan" />
-									</div>
-									<div className="metric-card">
-										<div className="metric-top">
-											<span>Shortlisted ideas</span>
-											<Bookmark size={19} />
-										</div>
-										<strong>
-											{savedGapIds.length.toString().padStart(2, "0")}
-										</strong>
-										<p>Saved for further review</p>
-										<span className="metric-accent metric-accent--peach" />
-									</div>
-									<div className="metric-card">
-										<div className="metric-top">
-											<span>Experiments</span>
-											<FlaskConical size={19} />
-										</div>
-										<strong>
-											{experiments.length.toString().padStart(2, "0")}
-										</strong>
-										<p>Plans in your workspace</p>
-										<span className="metric-accent metric-accent--green" />
-									</div>
-								</div>
-
-								<div className="dashboard-grid">
-									<section className="surface-panel">
-										<div className="panel-heading">
-											<div>
-												<p className="panel-kicker">STAY CURIOUS</p>
-												<h2>Recent literature</h2>
-											</div>
-											<button
-												type="button"
-												className="text-action"
-												onClick={() => navigate("library")}
-											>
-												View all <ArrowUpRight size={16} />
-											</button>
-										</div>
-										<div className="recent-paper-list">
-											{filteredPapers.slice(0, 3).map((paper, index) => (
-												<button
-													type="button"
-													className="recent-paper"
-													key={paper.id}
-													onClick={() => inspectPaper(paper.id)}
-												>
-													<span className="recent-paper-index">
-														0{index + 1}
-													</span>
-													<span className="recent-paper-body">
-														<strong className="recent-paper-title">
-															{paper.title}
-														</strong>
-														<small>
-															{paper.venue}{" "}
-															<span className="recent-paper-separator">·</span>{" "}
-															{paper.year}
-														</small>
-													</span>
-													<span className="recent-paper-arrow">
-														<ArrowUpRight size={17} />
-													</span>
-												</button>
-											))}
-											{filteredPapers.length === 0 && (
-												<EmptySearch query={query} />
-											)}
-										</div>
-									</section>
-									<section className="surface-panel">
-										<div className="panel-heading">
-											<div>
-												<p className="panel-kicker">POSSIBILITIES</p>
-												<h2>Research gap candidates</h2>
-											</div>
-											<button
-												type="button"
-												className="text-action"
-												onClick={() => navigate("gaps")}
-											>
-												Explore all <ArrowUpRight size={16} />
-											</button>
-										</div>
-										<div className="compact-gap-list">
-											{filteredGaps.slice(0, 2).map((gap) => (
-												<GapCard
-													key={gap.id}
-													gap={gap}
-													compact
-													saved={savedGapIds.includes(gap.id)}
-													onOpen={inspectGap}
-													onToggleSaved={toggleSavedGap}
-													onCreateExperiment={startExperiment}
-												/>
-											))}
-											{filteredGaps.length === 0 && (
-												<EmptySearch query={query} />
-											)}
-										</div>
-									</section>
-								</div>
-
-								<div className="process-strip">
-									<div className="process-intro">
-										<span className="process-star">
-											<ShieldCheck size={19} />
-										</span>
-										<div>
-											<strong>Evidence, not assumptions.</strong>
-											<p>
-												Re:Gap helps structure the process; it does not
-												establish novelty for you.
-											</p>
-										</div>
-									</div>
-									<div className="process-steps">
-										<span>
-											01 <b>Collect</b>
-										</span>
-										<ChevronRight size={15} />
-										<span>
-											02 <b>Connect</b>
-										</span>
-										<ChevronRight size={15} />
-										<span>
-											03 <b>Challenge</b>
-										</span>
-										<ChevronRight size={15} />
-										<span>
-											04 <b>Validate</b>
-										</span>
-									</div>
-								</div>
-							</>
+							<AtlasOverview
+								papers={papers}
+								gaps={gaps}
+								experiments={experiments}
+								savedGapIds={savedGapIds}
+								selectedId={inspection?.id ?? null}
+								onSelectPaper={inspectPaper}
+								onSelectGap={inspectGap}
+								onSelectExperiment={() => navigate("experiments")}
+								onAddPaper={() => setShowAddPaper(true)}
+								onViewGaps={() => navigate("gaps")}
+								onViewLibrary={() => navigate("library")}
+							/>
 						)}
 
 						{view === "library" && (
