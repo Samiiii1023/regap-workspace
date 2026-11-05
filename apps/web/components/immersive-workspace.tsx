@@ -756,7 +756,7 @@ export function ImmersiveWorkspace() {
 								{navigation.find((item) => item.id === view)?.label}
 							</strong>
 						</div>
-						<div className="topbar-system" aria-label="Local workspace; no team synchronization">
+						<div className="topbar-system">
 							<span className="topbar-system-dot" aria-hidden="true" />
 							LOCAL-FIRST / NO SYNC
 						</div>
@@ -879,9 +879,9 @@ export function ImmersiveWorkspace() {
 											<span className="hero-gradient">Find the questions.</span>
 										</h2>
 										<p>
-											Trace ideas back to their sources, investigate what remains
-											unanswered, and turn promising questions into falsifiable
-											experiments. Novelty still needs verification.
+											Trace ideas back to their sources, investigate what
+											remains unanswered, and turn promising questions into
+											falsifiable experiments. Novelty still needs verification.
 										</p>
 										<div className="hero-buttons">
 											<button
@@ -903,17 +903,27 @@ export function ImmersiveWorkspace() {
 											<span className="hero-note-dot" />
 											Interactive perspective map · Illustrative sources
 										</div>
-										<div className="hero-readouts" aria-label="Current workspace counts">
+										<div
+											className="hero-readouts"
+											role="group"
+											aria-label="Current workspace counts"
+										>
 											<div className="hero-readout">
-												<strong>{papers.length.toString().padStart(2, "0")}</strong>
+												<strong>
+													{papers.length.toString().padStart(2, "0")}
+												</strong>
 												<span>Papers mapped</span>
 											</div>
 											<div className="hero-readout">
-												<strong>{gaps.length.toString().padStart(2, "0")}</strong>
+												<strong>
+													{gaps.length.toString().padStart(2, "0")}
+												</strong>
 												<span>Questions tracked</span>
 											</div>
 											<div className="hero-readout">
-												<strong>{experiments.length.toString().padStart(2, "0")}</strong>
+												<strong>
+													{experiments.length.toString().padStart(2, "0")}
+												</strong>
 												<span>Experiment plans</span>
 											</div>
 										</div>
