@@ -872,7 +872,7 @@ export function ImmersiveWorkspace() {
 										<h2>
 											Connect the dots.
 											<br />
-											<span>Discover the gaps.</span>
+											<span className="hero-gradient">Discover the gaps.</span>
 										</h2>
 										<p>
 											Turn scattered literature into an explorable map of ideas.
