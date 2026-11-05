@@ -10,11 +10,13 @@ Re:Gap helps researchers organize literature, inspect limitations, explore candi
 
 - **Overview:** A responsive workspace with a draggable, zoomable **3D-projected knowledge graph**. Clicking a paper or gap node opens its evidence context in the source inspector.
 - **Paper library:** Search and sort, add custom papers (title, authors, year, venue, notes), inspect papers, and delete manually added records.
-- **Gap explorer:** Read proposed questions, inspect linked sources, shortlist candidates, and create experiments from a gap.
+- **Gap explorer:** Create your own candidate research questions, link them to papers, inspect evidence, shortlist ideas, delete your own candidates, and create experiments from them. Custom gaps are saved locally. The graph prioritizes papers linked to the visible gaps.
 - **Experiment planning:** Save hypotheses, baselines, and success metrics; track status as planned, in progress, or completed; delete plans.
-- **Usability:** Dark/light theme, responsive navigation, keyboard search (**⌘/Ctrl + K** or **/**), reduced-motion support, and JSON export of locally stored user data.
+- **Usability:** Dark/light theme, responsive navigation, keyboard search (**⌘/Ctrl + K** or **/**), draggable graph with keyboard rotation (arrow keys while a graph control is focused), reduced-motion support, and JSON export of locally stored user data.
 
-All interactive state is stored in browser `localStorage` (per browser/device). It is **not synchronized** across teammates or sessions on different devices. Exported JSON is a backup snapshot, not an import feature.
+All interactive state is stored in browser `localStorage` (per browser/device). It is **not synchronized** across teammates or sessions on different devices. Exported JSON is a backup snapshot, not an import feature. It includes custom papers, custom candidate gaps, shortlists, and experiment plans.
+
+The constellation intentionally displays up to **five gaps and eight papers** at once. It prioritizes papers connected to those visible gaps; the full data remains accessible in the library and gap explorer.
 
 ### Run locally
 
@@ -49,6 +51,7 @@ apps/web/
     globals.css             Tailwind and base tokens
   components/
     immersive-workspace.tsx Main flows, navigation, inspector, forms
+    add-gap-dialog.tsx      Evidence-linked custom gap creation
     research-graph.tsx      Interactive 3D perspective graph
     research-workspace.tsx  Original prototype (kept for reference)
   hooks/
