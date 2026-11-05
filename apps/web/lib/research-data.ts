@@ -1,4 +1,4 @@
-import { demoGaps, demoPapers, type Gap, type Paper } from "./demo-data";
+import type { Gap, Paper } from "./demo-data";
 
 export type ExperimentStatus = "planned" | "in-progress" | "complete";
 
@@ -161,7 +161,11 @@ export function isAppearance(value: unknown): value is "light" | "dark" {
 	return value === "light" || value === "dark";
 }
 
-export function parseWorkspaceExport(input: unknown): WorkspaceExport {
+export function parseWorkspaceExport(
+	input: unknown,
+	builtInPaperIds: string[] = [],
+	builtInGapIds: string[] = [],
+): WorkspaceExport {
 	if (
 		!isRecord(input) ||
 		input.format !== "regap-local-export" ||
@@ -176,11 +180,11 @@ export function parseWorkspaceExport(input: unknown): WorkspaceExport {
 	}
 
 	const paperIds = new Set([
-		...demoPapers.map((paper) => paper.id),
+		...builtInPaperIds,
 		...input.customPapers.map((paper) => paper.id),
 	]);
 	const gapIds = new Set([
-		...demoGaps.map((gap) => gap.id),
+		...builtInGapIds,
 		...input.customGaps.map((gap) => gap.id),
 	]);
 
