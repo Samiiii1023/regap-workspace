@@ -73,6 +73,7 @@ export function isPaper(value: unknown): value is Paper {
 		value.id.startsWith("manual-") &&
 		hasText(value.title, 300) &&
 		hasText(value.authors, 500) &&
+		typeof value.year === "number" &&
 		Number.isInteger(value.year) &&
 		(value.year as number) >= 1900 &&
 		(value.year as number) <= 2100 &&
