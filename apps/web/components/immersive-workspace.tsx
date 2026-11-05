@@ -33,6 +33,7 @@ import {
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { AddGapDialog } from "@/components/add-gap-dialog";
 import { ResearchGraph } from "@/components/research-graph";
+import { useModalFocus } from "@/hooks/use-modal-focus";
 import { usePersistentState } from "@/hooks/use-persistent-state";
 import { demoGaps, demoPapers, type Gap, type Paper } from "@/lib/demo-data";
 import {
@@ -271,6 +272,14 @@ export function ImmersiveWorkspace() {
 	const importRef = useRef<HTMLInputElement>(null);
 	const paperTitleRef = useRef<HTMLInputElement>(null);
 	const experimentTitleRef = useRef<HTMLInputElement>(null);
+	const paperDialogRef = useModalFocus<HTMLDivElement>(
+		() => setShowAddPaper(false),
+		showAddPaper,
+	);
+	const experimentDialogRef = useModalFocus<HTMLDivElement>(
+		() => setShowExperimentForm(false),
+		showExperimentForm,
+	);
 
 	const papers = useMemo(
 		() => [...customPapers, ...demoPapers],
@@ -338,6 +347,7 @@ export function ImmersiveWorkspace() {
 				setShowAddGap(false);
 				setShowExperimentForm(false);
 				setMenuOpen(false);
+				setInspectorOpen(false);
 			}
 		}
 		window.addEventListener("keydown", onKeyDown);
@@ -407,6 +417,7 @@ export function ImmersiveWorkspace() {
 	}
 
 	function startExperiment(id?: string) {
+		if (!dataReady) return;
 		setExperimentGapId(id ?? shortlistedGaps[0]?.id ?? gaps[0]?.id ?? "");
 		setExperimentTitle("");
 		setExperimentHypothesis("");
@@ -1442,6 +1453,7 @@ export function ImmersiveWorkspace() {
 						onClick={() => setShowAddPaper(false)}
 					/>
 					<div
+						ref={paperDialogRef}
 						className="workspace-modal"
 						role="dialog"
 						aria-modal="true"
@@ -1559,6 +1571,7 @@ export function ImmersiveWorkspace() {
 						onClick={() => setShowExperimentForm(false)}
 					/>
 					<div
+						ref={experimentDialogRef}
 						className="workspace-modal"
 						role="dialog"
 						aria-modal="true"
