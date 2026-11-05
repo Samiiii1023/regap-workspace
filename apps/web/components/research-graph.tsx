@@ -290,7 +290,7 @@ export function ResearchGraph({
 		}
 		const buffer = gl.createBuffer();
 		if (!buffer) return;
-		gl.useProgram(program);
+		Reflect.apply(gl.useProgram, gl, [program]);
 		const position = gl.getAttribLocation(program, "aPosition");
 		const color = gl.getAttribLocation(program, "aColor");
 		const setCamera = (name: string, value: number) =>
