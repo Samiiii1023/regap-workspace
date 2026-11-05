@@ -42,7 +42,7 @@ export function AtlasOverview({
 						<h2>Explore your research space.</h2>
 						<p>Trace evidence between papers, unresolved questions, and experiments. Every connection is yours to verify.</p>
 					</div>
-					<div className="atlas-workspace-stats" aria-label="Research records">
+					<div className="atlas-workspace-stats">
 						<div><BookOpen size={17} /><strong>{papers.length}</strong><span>Papers</span></div>
 						<div><Share2 size={17} /><strong>{gaps.length}</strong><span>Gaps</span></div>
 						<div><FlaskConical size={17} /><strong>{experiments.length}</strong><span>Experiments</span></div>
@@ -76,7 +76,7 @@ export function AtlasOverview({
 				<section className="atlas-insight-card">
 					<div className="atlas-insight-title"><span>02 / RESEARCH QUESTIONS</span><Share2 size={16} /></div>
 					<h3>Evidence depth</h3>
-					<div className="atlas-gap-heatmap" aria-label="Sources linked to research questions">
+					<div className="atlas-gap-heatmap">
 						{gaps.slice(0, 28).map((gap) => (
 							<button
 								type="button"
