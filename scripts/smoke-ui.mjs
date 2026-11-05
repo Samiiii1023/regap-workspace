@@ -86,7 +86,10 @@ async function run() {
 	await graph.getByRole("button", { name: "Zoom in" }).click();
 	await graph.getByRole("button", { name: "Reset graph orientation" }).click();
 	await graph.getByRole("checkbox", { name: "Papers" }).uncheck();
-	await graph.locator(".atlas-node--paper").first().waitFor({ state: "detached" });
+	await graph
+		.locator(".atlas-node--paper")
+		.first()
+		.waitFor({ state: "detached" });
 	assert.equal(await graph.locator(".atlas-node--paper").count(), 0);
 	await graph.getByRole("checkbox", { name: "Papers" }).check();
 	await graph.locator(".atlas-node--paper").first().waitFor();
