@@ -393,6 +393,11 @@ export function ImmersiveWorkspace() {
 	}
 
 	function createGap(gap: Gap) {
+		if (!dataReady) return;
+		if (customGaps.length >= 1000) {
+			window.alert("The local gap collection is full. Export your records before adding more.");
+			return;
+		}
 		setCustomGaps((previous) => [gap, ...previous]);
 		setShowAddGap(false);
 		navigate("gaps");
@@ -428,6 +433,11 @@ export function ImmersiveWorkspace() {
 
 	function addPaper(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		if (!dataReady) return;
+		if (customPapers.length >= 1000) {
+			window.alert("The local paper library is full. Export your records before adding more.");
+			return;
+		}
 		const title = newPaperTitle.trim();
 		if (!title) return;
 		const year = Number(newPaperYear);
@@ -483,6 +493,11 @@ export function ImmersiveWorkspace() {
 
 	function addExperiment(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		if (!dataReady) return;
+		if (experiments.length >= 2000) {
+			window.alert("The local experiment collection is full. Export your records before adding more.");
+			return;
+		}
 		if (
 			!experimentTitle.trim() ||
 			!experimentHypothesis.trim() ||
@@ -818,6 +833,7 @@ export function ImmersiveWorkspace() {
 										type="button"
 										className="primary-button"
 										onClick={() => startExperiment()}
+										disabled={!dataReady}
 									>
 										<Plus size={17} /> New experiment
 									</button>
@@ -1492,6 +1508,7 @@ export function ImmersiveWorkspace() {
 							<label>
 								Authors{" "}
 								<input
+									maxLength={500}
 									value={newPaperAuthors}
 									onChange={(event) => setNewPaperAuthors(event.target.value)}
 									placeholder="Names as listed in the paper"
@@ -1512,6 +1529,7 @@ export function ImmersiveWorkspace() {
 								<label>
 									Venue{" "}
 									<input
+										maxLength={300}
 										value={newPaperVenue}
 										onChange={(event) => setNewPaperVenue(event.target.value)}
 										placeholder="Conference / journal"
@@ -1522,6 +1540,7 @@ export function ImmersiveWorkspace() {
 								Abstract or notes{" "}
 								<textarea
 									rows={3}
+									maxLength={10000}
 									value={newPaperSummary}
 									onChange={(event) => setNewPaperSummary(event.target.value)}
 									placeholder="Summarize the contribution, or paste a verified abstract..."
@@ -1615,6 +1634,7 @@ export function ImmersiveWorkspace() {
 								<input
 									ref={experimentTitleRef}
 									required
+									maxLength={300}
 									value={experimentTitle}
 									onChange={(event) => setExperimentTitle(event.target.value)}
 									placeholder="What are you testing?"
@@ -1625,6 +1645,7 @@ export function ImmersiveWorkspace() {
 								<textarea
 									rows={2}
 									required
+									maxLength={2000}
 									value={experimentHypothesis}
 									onChange={(event) =>
 										setExperimentHypothesis(event.target.value)
@@ -1636,6 +1657,7 @@ export function ImmersiveWorkspace() {
 								Baseline{" "}
 								<input
 									required
+									maxLength={1000}
 									value={experimentBaseline}
 									onChange={(event) =>
 										setExperimentBaseline(event.target.value)
@@ -1647,6 +1669,7 @@ export function ImmersiveWorkspace() {
 								Evaluation metric{" "}
 								<input
 									required
+									maxLength={1000}
 									value={experimentMetric}
 									onChange={(event) => setExperimentMetric(event.target.value)}
 									placeholder="e.g. P95 latency at matched throughput"
