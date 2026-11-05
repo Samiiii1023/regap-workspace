@@ -360,7 +360,7 @@ export function ResearchGraph({
 	return (
 		<section className="research-graph atlas-graph" aria-label="Research knowledge graph">
 			<div className="atlas-toolbar">
-				<div className="atlas-view-tabs" role="group" aria-label="Research map view">
+				<fieldset className="atlas-view-tabs" aria-label="Research map view">
 					<button type="button" aria-pressed={view === "map"} onClick={() => setView("map")}>
 						<Share2 size={15} /> Map
 					</button>
@@ -370,15 +370,15 @@ export function ResearchGraph({
 					<button type="button" aria-pressed={view === "list"} onClick={() => setView("list")}>
 						<List size={15} /> List
 					</button>
-				</div>
-				<div className="atlas-view-tabs atlas-dimensional" role="group" aria-label="Map dimensions">
+				</fieldset>
+				<fieldset className="atlas-view-tabs atlas-dimensional" aria-label="Map dimensions">
 					<button type="button" aria-pressed={!spatial} onClick={() => setSpatial(false)}>2D</button>
 					<button type="button" aria-pressed={spatial} onClick={() => setSpatial(true)}>3D</button>
-				</div>
+				</fieldset>
 			</div>
 
 			{view === "map" ? (
-				<div
+				<section
 					ref={stage}
 					className="graph-stage atlas-stage"
 					aria-label="Interactive spatial research map; drag empty space to orbit, use controls to zoom, or select a paper, gap, or experiment"
@@ -457,7 +457,7 @@ export function ResearchGraph({
 						<button type="button" aria-label="Reset graph orientation" onClick={reset}><RotateCcw size={16} /></button>
 						<button type="button" aria-label={fullscreen ? "Exit fullscreen map" : "Fullscreen map"} onClick={toggleFullscreen}><Maximize2 size={16} /></button>
 					</fieldset>
-				</div>
+				</section>
 			) : (
 				<div className="atlas-data-panel">
 					<div className="atlas-data-heading">
@@ -492,7 +492,7 @@ export function ResearchGraph({
 				</div>
 			)}
 			<div className="atlas-footer">
-				<div className="atlas-layer-controls" aria-label="Visible graph layers">
+				<fieldset className="atlas-layer-controls" aria-label="Visible graph layers">
 					{(["paper", "gap", "experiment"] as const).map((kind) => (
 						<label key={kind} className={"atlas-layer atlas-layer--" + kind}>
 							<input
@@ -504,7 +504,7 @@ export function ResearchGraph({
 							{graphLabels[kind]}
 						</label>
 					))}
-				</div>
+				</fieldset>
 				<span className="atlas-node-count">
 					<Focus size={14} /> {nodes.length} shown · {links.length} recorded links
 				</span>
