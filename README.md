@@ -58,26 +58,37 @@ apps/web/
   components/
     immersive-workspace.tsx Main flows, navigation, inspector, forms
     add-gap-dialog.tsx      Evidence-linked custom gap creation
-    research-graph.tsx      Interactive 3D perspective graph
+    research-graph.tsx      Interactive perspective graph
+    research-workspace.tsx  Original prototype, kept for reference
   lib/
-    research-data.ts       Runtime validation and source links
-    research-data.test.mjs Schema, backup, URL and integrity tests
-    research-workspace.tsx  Original prototype (kept for reference)
+    demo-data.ts            Fictional research examples
+    research-data.ts        Runtime validation and source links
+    research-data.test.mjs  Data/backup integrity regression tests
   hooks/
     use-persistent-state.ts Browser state persistence and validation
     use-modal-focus.ts      Dialog keyboard focus management
-    demo-data.ts            Clearly fictional paper and gap fixtures
+scripts/
+  smoke-ui.mjs              Chromium end-to-end smoke tests
+docs/
+  FRONTEND_QA.md            Manual acceptance checklist
 packages/                   Shared UI and monorepo configuration
-.github/workflows/ci.yml    PR quality gate
+.github/workflows/
+  ci.yml                    Typecheck, unit tests, build, Biome
+  browser-smoke.yml         Desktop/mobile browser smoke checks
 ```
 
-## How to work as a team
+## Solo development and safe deployments
 
-Keep `main` green. Each teammate works on a separate `feat/*` branch, opens a pull request, waits for CI, and requests review before merging. Do not change another person's active branch or commit credentials/secrets. Recommended divisions:
+Re:Gap is currently maintained by one developer with AI assistance. Changes should use a feature branch and a pull request, even when there is no separate human reviewer. Keep `main` stable.
 
-1. **Frontend & accessibility:** UI, graphs, keyboard interactions, responsive layouts, integration tests.
-2. **Literature & evidence model:** real paper metadata sources, provenance, source links, limitation extraction, evidence traceability.
-3. **Experiment & gap reasoning:** validation methods, experiment schemas, backend workflows, evaluation.
+1. Implement changes on `feat/*`, not directly on `main`.
+2. Run the unit tests, strict TypeScript checks, production build, and Biome lint/format checks.
+3. Open or update a pull request targeting `main`, and wait for **Re:Gap CI** and **Re:Gap Browser Smoke** to pass on the **latest commit**.
+4. Check the **latest** Vercel preview deployment. Do not infer the current state from red historical runs on old commits.
+5. Merge the tested pull request. GitHub Actions checks both workflows again on `main`; verify that Vercel marks the new production deployment Ready and that the public domain serves the updated site.
+6. When production fails, use that deployment's own build logs, commit SHA, root-directory configuration, and environment settings to identify the cause before making another change.
+
+For a manual release check, see [the acceptance checklist](docs/FRONTEND_QA.md). GitHub CI and Vercel preview success reduce deployment risk; they do not prove zero remaining bugs.
 
 ## Next milestones
 
