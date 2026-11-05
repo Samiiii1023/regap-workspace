@@ -2233,3 +2233,30 @@
 	color: #ffb2b2;
 	font-size: 11px;
 }
+
+/* Verifiable paper provenance */
+.inspector-doi {
+	margin-top: 10px;
+	color: var(--rg-muted);
+	font-family: var(--font-geist-mono), monospace;
+	font-size: 10px;
+	overflow-wrap: anywhere;
+}
+.inspector-source-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 16px;
+	padding: 9px 12px;
+	border: 1px solid var(--rg-border);
+	border-radius: 9px;
+	background: var(--rg-surface);
+	color: var(--rg-purple);
+	font-size: 11px;
+	font-weight: 650;
+	text-decoration: none;
+}
+.inspector-source-link:hover {
+	border-color: var(--rg-purple);
+	background: var(--rg-hover);
+}
