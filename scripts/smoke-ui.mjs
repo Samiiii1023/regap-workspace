@@ -40,9 +40,21 @@ async function run() {
 	}
 
 	assert.equal(
-		await page.getByRole("heading", { name: /Ideas deserve/ }).count(),
+		await page.getByRole("heading", { name: /Research begins with/ }).count(),
 		1,
 	);
+	// Both distinct themes must be interactive, persistent, and accessible.
+	assert.equal(await page.locator(".regap-app.regap-light").count(), 0);
+	await page.getByRole("button", { name: "Switch to light theme" }).click();
+	assert.equal(await page.locator(".regap-app.regap-light").count(), 1);
+	const lightSurface = await page.locator(".regap-app").evaluate((element) =>
+		getComputedStyle(element).getPropertyValue("--rg-surface").trim(),
+	);
+	assert.equal(lightSurface, "#fffefa");
+	await page.reload();
+	await page.waitForFunction(() => document.querySelector(".regap-app.regap-light"));
+	await page.getByRole("button", { name: "Switch to dark theme" }).click();
+	assert.equal(await page.locator(".regap-app.regap-light").count(), 0);
 	assert.equal((await page.locator(".graph-node").count()) > 0, true);
 
 	// A researcher can add a paper with primary-source metadata.
@@ -169,6 +181,13 @@ async function run() {
 	const mobilePage = await mobile.newPage();
 	mobilePage.on("pageerror", (error) => errors.push(error.message));
 	await mobilePage.goto(baseURL, { waitUntil: "domcontentloaded" });
+	// The appearance control must remain available on narrow screens.
+	const mobileThemeToggle = mobilePage.getByRole("button", {
+		name: "Switch to light theme",
+	});
+	assert.equal(await mobileThemeToggle.isVisible(), true);
+	await mobileThemeToggle.click();
+	assert.equal(await mobilePage.locator(".regap-app.regap-light").count(), 1);
 	await mobilePage.getByRole("button", { name: "Open navigation" }).click();
 	assert.equal(
 		await mobilePage.getByRole("button", { name: "Gap explorer" }).isVisible(),
