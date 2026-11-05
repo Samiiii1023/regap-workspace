@@ -144,6 +144,7 @@ export function ResearchGraph({
 
 			<div
 				className="graph-stage"
+				role="region"
 				aria-label="Interactive three-dimensional research graph. Drag the background to rotate, or choose a node to inspect."
 				onPointerDown={onPointerDown}
 				onPointerMove={onPointerMove}
@@ -219,7 +220,7 @@ export function ResearchGraph({
 					<span><i className="graph-legend-paper" /> Papers</span>
 					<span><i className="graph-legend-gap" /> Candidate gaps</span>
 				</div>
-				<div className="graph-controls" aria-label="Graph controls">
+				<div className="graph-controls" role="group" aria-label="Graph controls">
 					<button
 						type="button"
 						aria-label="Zoom out"
