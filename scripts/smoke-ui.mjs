@@ -5,7 +5,7 @@ const require = createRequire("/tmp/regap-playwright/smoke-test.cjs");
 const { chromium } = require("playwright");
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
 
-const baseURL = process.env.RE_GAP_BASE_URL ?? "http://127.0.0.1:3000";
+const baseURL = "http://127.0.0.1:3000";
 
 async function clickNav(page, name) {
 	await page.getByRole("navigation", { name: "Main navigation" })
