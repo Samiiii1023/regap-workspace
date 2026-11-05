@@ -38,8 +38,14 @@ export function usePersistentState<T>(
 		}
 
 		function onStorage(event: StorageEvent) {
-			if (event.storageArea !== window.localStorage || event.key !== key)
+			if (
+				event.storageArea !== window.localStorage ||
+				(event.key !== key && event.key !== null)
+			) return;
+			if (event.newValue === null) {
+				setValue(initialValue);
 				return;
+			}
 			const next = decode(event.newValue);
 			if (next !== null) setValue(next);
 		}
