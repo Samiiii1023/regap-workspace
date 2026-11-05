@@ -640,7 +640,7 @@ export function ImmersiveWorkspace() {
 						<button
 							type="button"
 							className="sidebar-link"
-							onClick={() => navigate("gaps")}
+							onClick={viewShortlist}
 						>
 							<Bookmark size={19} />
 							<span>Shortlisted gaps</span>
@@ -649,12 +649,35 @@ export function ImmersiveWorkspace() {
 						<button
 							type="button"
 							className="sidebar-link"
+							disabled={!dataReady}
 							onClick={exportWorkspace}
 						>
 							<Download size={19} />
 							<span>Export workspace</span>
 						</button>
+						<button
+							type="button"
+							className="sidebar-link"
+							disabled={!dataReady}
+							onClick={() => importRef.current?.click()}
+						>
+							<Download size={19} />
+							<span>Import backup</span>
+						</button>
+						<input
+							ref={importRef}
+							type="file"
+							accept=".json,application/json"
+							className="sr-only"
+							aria-label="Select Re:Gap backup JSON"
+							onChange={importWorkspace}
+						/>
 					</div>
+					{importError && (
+						<p className="import-error" role="alert">
+							{importError}
+						</p>
+					)}
 					<div className="sidebar-spacer" />
 					<div className="sidebar-feature">
 						<div className="sidebar-feature-orb">
@@ -1058,9 +1081,22 @@ export function ImmersiveWorkspace() {
 											· {savedGapIds.length} shortlisted
 										</span>
 									</div>
-									<span className="collection-caption">
-										<ShieldCheck size={15} /> Novelty not yet established
-									</span>
+									<div className="gap-filter-controls" aria-label="Filter gaps">
+										<button
+											type="button"
+											aria-pressed={gapFilter === "all"}
+											onClick={() => setGapFilter("all")}
+										>
+											All candidates
+										</button>
+										<button
+											type="button"
+											aria-pressed={gapFilter === "saved"}
+											onClick={() => setGapFilter("saved")}
+										>
+											<Bookmark size={14} /> Shortlisted ({savedGapIds.length})
+										</button>
+									</div>
 								</div>
 								<div className="gaps-grid">
 									{filteredGaps.map((gap) => (
@@ -1074,7 +1110,23 @@ export function ImmersiveWorkspace() {
 										/>
 									))}
 								</div>
-								{filteredGaps.length === 0 && <EmptySearch query={query} />}
+								{filteredGaps.length === 0 &&
+									(gapFilter === "saved" && !normalizedQuery ? (
+										<div className="empty-state">
+											<Bookmark size={26} />
+											<h3>No shortlisted gaps yet</h3>
+											<p>Save candidate gaps to see them here.</p>
+											<button
+												type="button"
+												className="ghost-button"
+												onClick={() => setGapFilter("all")}
+											>
+												View all gaps
+											</button>
+										</div>
+									) : (
+										<EmptySearch query={query} />
+									))}
 								<div className="guidance-panel">
 									<div className="guidance-icon">
 										<CircleHelp size={21} />
