@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Validator<T> = (input: unknown) => input is T;
 
@@ -11,6 +11,7 @@ export function usePersistentState<T>(
 ) {
 	const [value, setValue] = useState<T>(initialValue);
 	const [ready, setReady] = useState(false);
+	const initialValueRef = useRef(initialValue);
 
 	useEffect(() => {
 		function decode(raw: string | null): T | null {
@@ -43,7 +44,7 @@ export function usePersistentState<T>(
 				(event.key !== key && event.key !== null)
 			) return;
 			if (event.newValue === null) {
-				setValue(initialValue);
+				setValue(initialValueRef.current);
 				return;
 			}
 			const next = decode(event.newValue);
