@@ -311,7 +311,7 @@
 .sidebar-footer strong {
 	font-size: 11px;
 }
-.sidebar-footer div span {
+.sidebar-footer-status {
 	font-size: 10px;
 	color: var(--rg-muted);
 }
@@ -1027,7 +1027,7 @@
 	border-radius: 7px;
 	color: var(--rg-secondary);
 }
-.recent-paper:hover .recent-paper-body strong,
+.recent-paper:hover .recent-paper-title,
 .recent-paper:hover .recent-paper-arrow {
 	color: var(--rg-purple);
 }
