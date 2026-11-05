@@ -65,10 +65,10 @@ const viewCopy: Record<
 	{ eyebrow: string; title: string; description: string }
 > = {
 	overview: {
-		eyebrow: "THE RESEARCH DESK",
-		title: "Your next breakthrough starts with a better question.",
+		eyebrow: "RE:GAP / RESEARCH OBSERVATORY",
+		title: "The research observatory.",
 		description:
-			"Follow the evidence from a paper to its limitations, uncover promising questions, and turn them into experiments.",
+			"A place to see the connections, test the assumptions, and ask what the evidence leaves unanswered.",
 	},
 	library: {
 		eyebrow: "LITERATURE / 01",
@@ -750,11 +750,15 @@ export function ImmersiveWorkspace() {
 							>
 								<Menu size={20} />
 							</button>
-							<span>Workspace</span>
+							<span>Observatory</span>
 							<ChevronRight size={14} />
 							<strong>
 								{navigation.find((item) => item.id === view)?.label}
 							</strong>
+						</div>
+						<div className="topbar-system" aria-label="Local workspace; no team synchronization">
+							<span className="topbar-system-dot" aria-hidden="true" />
+							LOCAL-FIRST / NO SYNC
 						</div>
 						<div className="topbar-actions">
 							<label className="global-search">
@@ -822,7 +826,7 @@ export function ImmersiveWorkspace() {
 								<h1>
 									{view === "overview" ? (
 										<>
-											Ideas deserve <em>evidence.</em>
+											Research begins with <em>questions.</em>
 										</>
 									) : (
 										content.title
@@ -867,17 +871,17 @@ export function ImmersiveWorkspace() {
 								<div className="overview-hero">
 									<div className="hero-copy">
 										<span className="hero-tag">
-											<Sparkles size={15} /> THE NEXT FRONTIER IS A QUESTION
+											<Sparkles size={15} /> FIELD NOTES / 001
 										</span>
 										<h2>
-											Connect the dots.
+											Follow the evidence.
 											<br />
-											<span className="hero-gradient">Discover the gaps.</span>
+											<span className="hero-gradient">Find the questions.</span>
 										</h2>
 										<p>
-											Turn scattered literature into an explorable map of ideas.
-											Connect sources to limitations, challenge assumptions, and
-											design what comes next.
+											Trace ideas back to their sources, investigate what remains
+											unanswered, and turn promising questions into falsifiable
+											experiments. Novelty still needs verification.
 										</p>
 										<div className="hero-buttons">
 											<button
@@ -897,7 +901,21 @@ export function ImmersiveWorkspace() {
 										</div>
 										<div className="hero-note">
 											<span className="hero-note-dot" />
-											Interactive graph · Evidence-linked nodes
+											Interactive perspective map · Illustrative sources
+										</div>
+										<div className="hero-readouts" aria-label="Current workspace counts">
+											<div className="hero-readout">
+												<strong>{papers.length.toString().padStart(2, "0")}</strong>
+												<span>Papers mapped</span>
+											</div>
+											<div className="hero-readout">
+												<strong>{gaps.length.toString().padStart(2, "0")}</strong>
+												<span>Questions tracked</span>
+											</div>
+											<div className="hero-readout">
+												<strong>{experiments.length.toString().padStart(2, "0")}</strong>
+												<span>Experiment plans</span>
+											</div>
 										</div>
 									</div>
 									<ResearchGraph
