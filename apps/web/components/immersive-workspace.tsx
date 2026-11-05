@@ -903,11 +903,7 @@ export function ImmersiveWorkspace() {
 											<span className="hero-note-dot" />
 											Interactive perspective map · Illustrative sources
 										</div>
-										<div
-											className="hero-readouts"
-											role="group"
-											aria-label="Current workspace counts"
-										>
+										<div className="hero-readouts">
 											<div className="hero-readout">
 												<strong>
 													{papers.length.toString().padStart(2, "0")}
