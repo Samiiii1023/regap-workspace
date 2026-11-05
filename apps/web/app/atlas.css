@@ -1353,3 +1353,15 @@
 		transition-duration: 0.01ms;
 	}
 }
+
+/* Native fieldset controls do not inherit browser margins or paddings. */
+.atlas-view-tabs,
+.atlas-layer-controls {
+	margin: 0;
+	min-width: 0;
+}
+
+.atlas-layer-controls {
+	border: 0;
+	padding: 0;
+}
