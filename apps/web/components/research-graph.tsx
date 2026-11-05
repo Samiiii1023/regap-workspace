@@ -142,9 +142,8 @@ export function ResearchGraph({
 				<span className="graph-toolbar-count">{nodes.length} nodes</span>
 			</div>
 
-			<div
+			<section
 				className="graph-stage"
-				role="region"
 				aria-label="Interactive three-dimensional research graph. Drag the background to rotate, or choose a node to inspect."
 				onPointerDown={onPointerDown}
 				onPointerMove={onPointerMove}
@@ -213,14 +212,14 @@ export function ResearchGraph({
 						</button>
 					))}
 				<div className="graph-floor" aria-hidden="true" />
-			</div>
+			</section>
 
 			<div className="graph-bottom">
 				<div className="graph-legend">
 					<span><i className="graph-legend-paper" /> Papers</span>
 					<span><i className="graph-legend-gap" /> Candidate gaps</span>
 				</div>
-				<div className="graph-controls" role="group" aria-label="Graph controls">
+				<fieldset className="graph-controls" aria-label="Graph controls">
 					<button
 						type="button"
 						aria-label="Zoom out"
@@ -246,7 +245,7 @@ export function ResearchGraph({
 					>
 						<Maximize2 size={14} />
 					</button>
-				</div>
+				</fieldset>
 			</div>
 			<p className="graph-hint">Drag to orbit · Select a node to inspect its evidence</p>
 		</div>
