@@ -189,7 +189,11 @@
 	border-radius: 18px;
 	padding: 20px;
 	background:
-		radial-gradient(ellipse at 100% -20%, rgb(195 249 137 / 17%), transparent 65%),
+		radial-gradient(
+			ellipse at 100% -20%,
+			rgb(195 249 137 / 17%),
+			transparent 65%
+		),
 		linear-gradient(135deg, #18332e, #112126 70%);
 	color: #edf7f2;
 	box-shadow: inset 0 1px 0 rgb(255 255 255 / 6%);
@@ -345,11 +349,8 @@
 .quiet-button {
 	background: var(--rg-surface-raised);
 	border-color: var(--rg-border);
-	color: var(--rg-text);
-}
-
-.ghost-button {
 	border-radius: 11px;
+	color: var(--rg-text);
 }
 
 .text-action {
@@ -479,6 +480,7 @@
 
 .regap-light .research-graph {
 	margin: 12px;
+	width: calc(100% - 24px);
 	min-height: 446px;
 	border: 1px solid #31554e;
 	border-radius: 17px;
@@ -683,8 +685,7 @@
 
 .process-strip {
 	background:
-		linear-gradient(110deg, var(--rg-hover), transparent 55%),
-		var(--rg-surface);
+		linear-gradient(110deg, var(--rg-hover), transparent 55%), var(--rg-surface);
 }
 
 .regap-inspector,
@@ -831,5 +832,6 @@
 
 	.regap-light .research-graph {
 		margin: 7px;
+		width: calc(100% - 14px);
 	}
 }
