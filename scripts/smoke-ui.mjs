@@ -91,9 +91,8 @@ async function run() {
 	// Browser-side JSON import must restore all linked records.
 	page.once("dialog", (dialog) => dialog.accept());
 	await page.getByRole("button", { name: "Delete Smoke-tested experiment" }).click();
-	await page.locator('input[aria-label="Select Re:Gap backup JSON"]').setInputFiles(destination);
 	page.once("dialog", (dialog) => dialog.accept());
-	await page.getByRole("button", { name: "Import backup" }).click().catch(() => {});
+	await page.locator('input[aria-label="Select Re:Gap backup JSON"]').setInputFiles(destination);
 	await page.waitForTimeout(200);
 	await clickNav(page, "Experiments");
 	assert.equal(await page.getByRole("heading", { name: "Smoke-tested experiment" }).count(), 1);
