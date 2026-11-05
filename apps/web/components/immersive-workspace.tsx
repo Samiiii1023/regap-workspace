@@ -204,6 +204,8 @@ export function ImmersiveWorkspace() {
 	const [experimentBaseline, setExperimentBaseline] = useState("");
 	const [experimentMetric, setExperimentMetric] = useState("");
 	const searchRef = useRef<HTMLInputElement>(null);
+	const paperTitleRef = useRef<HTMLInputElement>(null);
+	const experimentTitleRef = useRef<HTMLInputElement>(null);
 
 	const papers = useMemo(() => [...customPapers, ...demoPapers], [customPapers]);
 	const normalizedQuery = query.trim().toLowerCase();
@@ -239,6 +241,14 @@ export function ImmersiveWorkspace() {
 		window.addEventListener("keydown", onKeyDown);
 		return () => window.removeEventListener("keydown", onKeyDown);
 	}, []);
+
+	useEffect(() => {
+		if (showAddPaper) paperTitleRef.current?.focus();
+	}, [showAddPaper]);
+
+	useEffect(() => {
+		if (showExperimentForm) experimentTitleRef.current?.focus();
+	}, [showExperimentForm]);
 
 	function navigate(next: View) {
 		setView(next);
@@ -533,12 +543,13 @@ export function ImmersiveWorkspace() {
 			</div>
 
 			{showAddPaper && (
-				<div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowAddPaper(false); }}>
+				<div className="modal-backdrop">
+					<button type="button" className="modal-dismiss" aria-label="Close add paper dialog backdrop" onClick={() => setShowAddPaper(false)} />
 					<div className="workspace-modal" role="dialog" aria-modal="true" aria-labelledby="add-paper-heading">
 						<div className="modal-head"><div><span className="eyebrow">BUILD YOUR LIBRARY</span><h2 id="add-paper-heading">Add a research paper</h2></div><button type="button" className="icon-button" aria-label="Close add paper dialog" onClick={() => setShowAddPaper(false)}><X size={20} /></button></div>
 						<p className="modal-intro">Save source details in this browser. Metadata is not fetched or verified automatically.</p>
 						<form className="workspace-form" onSubmit={addPaper}>
-							<label>Paper title <input autoFocus required maxLength={300} value={newPaperTitle} onChange={(event) => setNewPaperTitle(event.target.value)} placeholder="Enter the full title" /></label>
+							<label>Paper title <input ref={paperTitleRef} required maxLength={300} value={newPaperTitle} onChange={(event) => setNewPaperTitle(event.target.value)} placeholder="Enter the full title" /></label>
 							<label>Authors <input value={newPaperAuthors} onChange={(event) => setNewPaperAuthors(event.target.value)} placeholder="Names as listed in the paper" /></label>
 							<div className="form-columns"><label>Year <input type="number" min="1900" max="2100" required value={newPaperYear} onChange={(event) => setNewPaperYear(event.target.value)} /></label><label>Venue <input value={newPaperVenue} onChange={(event) => setNewPaperVenue(event.target.value)} placeholder="Conference / journal" /></label></div>
 							<label>Abstract or notes <textarea rows={3} value={newPaperSummary} onChange={(event) => setNewPaperSummary(event.target.value)} placeholder="Summarize the contribution, or paste a verified abstract..." /></label>
@@ -548,13 +559,14 @@ export function ImmersiveWorkspace() {
 				</div>
 			)}
 			{showExperimentForm && (
-				<div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowExperimentForm(false); }}>
+				<div className="modal-backdrop">
+					<button type="button" className="modal-dismiss" aria-label="Close experiment dialog backdrop" onClick={() => setShowExperimentForm(false)} />
 					<div className="workspace-modal" role="dialog" aria-modal="true" aria-labelledby="experiment-heading">
 						<div className="modal-head"><div><span className="eyebrow">MAKE IT TESTABLE</span><h2 id="experiment-heading">Plan an experiment</h2></div><button type="button" className="icon-button" aria-label="Close experiment dialog" onClick={() => setShowExperimentForm(false)}><X size={20} /></button></div>
 						<p className="modal-intro">A concrete test makes a research hypothesis easier to challenge and refine.</p>
 						<form className="workspace-form" onSubmit={addExperiment}>
 							<label>Linked gap <select value={experimentGapId} required onChange={(event) => setExperimentGapId(event.target.value)}>{demoGaps.map((gap) => <option key={gap.id} value={gap.id}>{gap.title}</option>)}</select></label>
-							<label>Experiment title <input autoFocus required value={experimentTitle} onChange={(event) => setExperimentTitle(event.target.value)} placeholder="What are you testing?" /></label>
+							<label>Experiment title <input ref={experimentTitleRef} required value={experimentTitle} onChange={(event) => setExperimentTitle(event.target.value)} placeholder="What are you testing?" /></label>
 							<label>Hypothesis <textarea rows={2} required value={experimentHypothesis} onChange={(event) => setExperimentHypothesis(event.target.value)} placeholder="If we change X, then Y should improve because..." /></label>
 							<label>Baseline <input required value={experimentBaseline} onChange={(event) => setExperimentBaseline(event.target.value)} placeholder="Existing method or control condition" /></label>
 							<label>Evaluation metric <input required value={experimentMetric} onChange={(event) => setExperimentMetric(event.target.value)} placeholder="e.g. P95 latency at matched throughput" /></label>
