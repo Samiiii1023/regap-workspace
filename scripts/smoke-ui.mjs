@@ -43,35 +43,49 @@ async function run() {
 	}
 
 	assert.equal(
-		await page.getByRole("heading", { name: /Research begins with/ }).count(),
+		await page.getByRole("heading", { name: /Knowledge constellation/ }).count(),
 		1,
 	);
-	// Both distinct themes must be interactive, persistent, and accessible.
-	assert.equal(await page.locator(".regap-app.regap-light").count(), 0);
+	// The atlas is rendered from real research records, not static mock data.
+	assert.equal(await page.locator(".atlas-workspace").count(), 1);
+	assert.equal(await page.locator(".graph-node.atlas-node").count() >= 5, true);
+	assert.equal(await page.locator(".regap-app.regap-light").count(), 1);
 	await page.screenshot({
-		path: `${screenshotDir}/01-desktop-night.png`,
+		path: `${screenshotDir}/01-desktop-daylight.png`,
 		fullPage: true,
 		animations: "disabled",
 	});
-	await page.getByRole("button", { name: "Switch to light theme" }).click();
-	assert.equal(await page.locator(".regap-app.regap-light").count(), 1);
-	const lightSurface = await page
-		.locator(".regap-app")
-		.evaluate((element) =>
-			getComputedStyle(element).getPropertyValue("--rg-surface").trim(),
-		);
-	assert.equal(lightSurface, "#fffefa");
+
+	const graph = page.getByRole("region", { name: "Research knowledge graph" });
+	await graph.getByRole("button", { name: "2D", exact: true }).click();
+	assert.equal(
+		await graph.getByRole("button", { name: "2D", exact: true }).getAttribute("aria-pressed"),
+		"true",
+	);
+	await graph.getByRole("button", { name: "3D", exact: true }).click();
+	await graph.getByRole("button", { name: "List", exact: true }).click();
+	assert.equal(await graph.locator(".atlas-data-list > button").count() >= 5, true);
+	await graph.getByRole("button", { name: "Connections", exact: true }).click();
+	assert.equal(await graph.locator(".atlas-data-list > button").count() >= 1, true);
+	await graph.getByRole("button", { name: "Map", exact: true }).click();
+	await graph.getByRole("button", { name: "Zoom in" }).click();
+	await graph.getByRole("button", { name: "Reset graph orientation" }).click();
+	await graph.getByRole("checkbox", { name: "Papers" }).uncheck();
+	assert.equal(await graph.locator(".graph-node--paper").count(), 0);
+	await graph.getByRole("checkbox", { name: "Papers" }).check();
+	assert.equal(await graph.locator(".graph-node--paper").count() > 0, true);
+
+	await page.getByRole("button", { name: "Switch to dark theme" }).click();
+	assert.equal(await page.locator(".regap-app.regap-light").count(), 0);
 	await page.screenshot({
-		path: `${screenshotDir}/02-desktop-daylight.png`,
+		path: `${screenshotDir}/02-desktop-night.png`,
 		fullPage: true,
 		animations: "disabled",
 	});
 	await page.reload();
-	await page.waitForFunction(() =>
-		document.querySelector(".regap-app.regap-light"),
-	);
-	await page.getByRole("button", { name: "Switch to dark theme" }).click();
 	assert.equal(await page.locator(".regap-app.regap-light").count(), 0);
+	await page.getByRole("button", { name: "Switch to light theme" }).click();
+	assert.equal(await page.locator(".regap-app.regap-light").count(), 1);
 	assert.equal((await page.locator(".graph-node").count()) > 0, true);
 
 	// A researcher can add a paper with primary-source metadata.
@@ -198,19 +212,19 @@ async function run() {
 	mobilePage.on("pageerror", (error) => errors.push(error.message));
 	await mobilePage.goto(baseURL, { waitUntil: "domcontentloaded" });
 	await mobilePage.screenshot({
-		path: `${screenshotDir}/03-mobile-night.png`,
+		path: `${screenshotDir}/03-mobile-daylight.png`,
 		fullPage: true,
 		animations: "disabled",
 	});
 	// The appearance control must remain available on narrow screens.
 	const mobileThemeToggle = mobilePage.getByRole("button", {
-		name: "Switch to light theme",
+		name: "Switch to dark theme",
 	});
 	assert.equal(await mobileThemeToggle.isVisible(), true);
 	await mobileThemeToggle.click();
-	assert.equal(await mobilePage.locator(".regap-app.regap-light").count(), 1);
+	assert.equal(await mobilePage.locator(".regap-app.regap-light").count(), 0);
 	await mobilePage.screenshot({
-		path: `${screenshotDir}/04-mobile-daylight.png`,
+		path: `${screenshotDir}/04-mobile-night.png`,
 		fullPage: true,
 		animations: "disabled",
 	});
