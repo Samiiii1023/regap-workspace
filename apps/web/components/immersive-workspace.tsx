@@ -96,6 +96,22 @@ function formatDate(value: string) {
 	});
 }
 
+function resolvePaperSourceUrl(paper: Paper): string | null {
+	if (paper.url) {
+		try {
+			const url = new URL(paper.url);
+			if (url.protocol === "https:" || url.protocol === "http:")
+				return url.toString();
+		} catch {
+			// Fall back to a valid DOI, if one was supplied.
+		}
+	}
+	const doi = paper.doi?.trim();
+	if (doi && /^10\\.\\d{4,9}\\/[\\w.():;/-]+$/i.test(doi))
+		return `https://doi.org/${doi}`;
+	return null;
+}
+
 function PaperCard({
 	paper,
 	selected,
@@ -252,6 +268,8 @@ export function ImmersiveWorkspace() {
 	);
 	const [newPaperVenue, setNewPaperVenue] = useState("");
 	const [newPaperSummary, setNewPaperSummary] = useState("");
+	const [newPaperDoi, setNewPaperDoi] = useState("");
+	const [newPaperUrl, setNewPaperUrl] = useState("");
 	const [experimentGapId, setExperimentGapId] = useState(demoGaps[0]?.id ?? "");
 	const [experimentTitle, setExperimentTitle] = useState("");
 	const [experimentHypothesis, setExperimentHypothesis] = useState("");
@@ -296,6 +314,9 @@ export function ImmersiveWorkspace() {
 		inspection?.kind === "paper"
 			? papers.find((paper) => paper.id === inspection.id)
 			: undefined;
+	const selectedPaperSourceUrl = selectedPaper
+		? resolvePaperSourceUrl(selectedPaper)
+		: null;
 	const selectedGap =
 		inspection?.kind === "gap"
 			? gaps.find((gap) => gap.id === inspection.id)
@@ -396,11 +417,24 @@ export function ImmersiveWorkspace() {
 		if (!title) return;
 		const year = Number(newPaperYear);
 		if (!Number.isInteger(year) || year < 1900 || year > 2100) return;
+		const sourceUrl = newPaperUrl.trim();
+		if (sourceUrl) {
+			try {
+				const parsedUrl = new URL(sourceUrl);
+				if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:")
+					throw new Error("Only HTTP(S) links are supported.");
+			} catch {
+				window.alert("Enter a full source URL beginning with https:// or http://.");
+				return;
+			}
+		}
 		const paper: Paper = {
 			id: `manual-${crypto.randomUUID()}`,
 			title,
 			authors: newPaperAuthors.trim() || "Unknown authors",
 			year,
+			doi: newPaperDoi.trim() || undefined,
+			url: sourceUrl || undefined,
 			venue: newPaperVenue.trim() || "Added manually",
 			summary: newPaperSummary.trim() || "No abstract has been added yet.",
 			limitation:
@@ -411,6 +445,8 @@ export function ImmersiveWorkspace() {
 		setNewPaperAuthors("");
 		setNewPaperVenue("");
 		setNewPaperSummary("");
+		setNewPaperDoi("");
+		setNewPaperUrl("");
 		setShowAddPaper(false);
 		navigate("library");
 		inspectPaper(paper.id);
@@ -1170,6 +1206,19 @@ export function ImmersiveWorkspace() {
 								</span>
 								<h3>{selectedPaper.title}</h3>
 								<p className="inspector-authors">{selectedPaper.authors}</p>
+								{selectedPaper.doi && (
+									<p className="inspector-doi">DOI: {selectedPaper.doi}</p>
+								)}
+								{selectedPaperSourceUrl && (
+									<a
+										className="inspector-source-link"
+										href={selectedPaperSourceUrl}
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										Open original source <ArrowUpRight size={16} />
+									</a>
+								)}
 								<div className="inspector-divider" />
 								<h4>Overview</h4>
 								<p>{selectedPaper.summary}</p>
@@ -1376,6 +1425,25 @@ export function ImmersiveWorkspace() {
 									value={newPaperSummary}
 									onChange={(event) => setNewPaperSummary(event.target.value)}
 									placeholder="Summarize the contribution, or paste a verified abstract..."
+								/>
+							</label>
+							<label>
+								DOI (optional)
+								<input
+									value={newPaperDoi}
+									onChange={(event) => setNewPaperDoi(event.target.value)}
+									placeholder="10.xxxx/..."
+									maxLength={300}
+								/>
+							</label>
+							<label>
+								Source URL (optional)
+								<input
+									type="url"
+									value={newPaperUrl}
+									onChange={(event) => setNewPaperUrl(event.target.value)}
+									placeholder="https://arxiv.org/abs/..."
+									maxLength={1200}
 								/>
 							</label>
 							<div className="modal-actions">
