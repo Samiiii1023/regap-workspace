@@ -31,6 +31,7 @@ import {
 	X,
 } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { AddGapDialog } from "@/components/add-gap-dialog";
 import { ResearchGraph } from "@/components/research-graph";
 import { usePersistentState } from "@/hooks/use-persistent-state";
 import { demoGaps, demoPapers, type Gap, type Paper } from "@/lib/demo-data";
@@ -159,6 +160,7 @@ function GapCard({
 					{gap.confidence}
 				</span>
 				<span className="gap-source-count">
+					{gap.id.startsWith("gap-custom-") ? "Your candidate · " : ""}
 					{gap.sourceIds.length} linked sources
 				</span>
 			</div>
@@ -222,6 +224,7 @@ export function ImmersiveWorkspace() {
 		id: "paper-1",
 	});
 	const [showAddPaper, setShowAddPaper] = useState(false);
+	const [showAddGap, setShowAddGap] = useState(false);
 	const [showExperimentForm, setShowExperimentForm] = useState(false);
 	const [appearance, setAppearance] = usePersistentState<"dark" | "light">(
 		"regap:appearance:v1",
@@ -234,6 +237,10 @@ export function ImmersiveWorkspace() {
 	const [customPapers, setCustomPapers, papersReady] = usePersistentState<
 		Paper[]
 	>("regap:papers:v1", []);
+	const [customGaps, setCustomGaps, gapsReady] = usePersistentState<Gap[]>(
+		"regap:gaps:v1",
+		[],
+	);
 	const [experiments, setExperiments] = usePersistentState<Experiment[]>(
 		"regap:experiments:v1",
 		[],
@@ -258,6 +265,7 @@ export function ImmersiveWorkspace() {
 		() => [...customPapers, ...demoPapers],
 		[customPapers],
 	);
+	const gaps = useMemo(() => [...customGaps, ...demoGaps], [customGaps]);
 	const normalizedQuery = query.trim().toLowerCase();
 	const filteredPapers = useMemo(() => {
 		return papers
@@ -274,7 +282,7 @@ export function ImmersiveWorkspace() {
 						: b.year - a.year,
 			);
 	}, [papers, normalizedQuery, sort]);
-	const filteredGaps = demoGaps.filter((gap) =>
+	const filteredGaps = gaps.filter((gap) =>
 		`${gap.title} ${gap.description} ${gap.nextStep}`
 			.toLowerCase()
 			.includes(normalizedQuery),
@@ -290,9 +298,9 @@ export function ImmersiveWorkspace() {
 			: undefined;
 	const selectedGap =
 		inspection?.kind === "gap"
-			? demoGaps.find((gap) => gap.id === inspection.id)
+			? gaps.find((gap) => gap.id === inspection.id)
 			: undefined;
-	const shortlistedGaps = demoGaps.filter((gap) =>
+	const shortlistedGaps = gaps.filter((gap) =>
 		savedGapIds.includes(gap.id),
 	);
 
@@ -312,6 +320,7 @@ export function ImmersiveWorkspace() {
 			}
 			if (event.key === "Escape") {
 				setShowAddPaper(false);
+				setShowAddGap(false);
 				setShowExperimentForm(false);
 				setMenuOpen(false);
 			}
@@ -352,8 +361,30 @@ export function ImmersiveWorkspace() {
 		);
 	}
 
+	function createGap(gap: Gap) {
+		setCustomGaps((previous) => [gap, ...previous]);
+		setShowAddGap(false);
+		navigate("gaps");
+		inspectGap(gap.id);
+	}
+
+	function deleteGap(id: string) {
+		const gap = customGaps.find((item) => item.id === id);
+		if (
+			!gap ||
+			!window.confirm(
+				`Remove “${gap.title}”? Any existing experiment plans will be kept.`,
+			)
+		)
+			return;
+		setCustomGaps((previous) => previous.filter((item) => item.id !== id));
+		setSavedGapIds((previous) => previous.filter((item) => item !== id));
+		setInspection(null);
+		setInspectorOpen(false);
+	}
+
 	function startExperiment(id?: string) {
-		setExperimentGapId(id ?? shortlistedGaps[0]?.id ?? demoGaps[0]?.id ?? "");
+		setExperimentGapId(id ?? shortlistedGaps[0]?.id ?? gaps[0]?.id ?? "");
 		setExperimentTitle("");
 		setExperimentHypothesis("");
 		setExperimentBaseline("");
@@ -395,6 +426,12 @@ export function ImmersiveWorkspace() {
 		)
 			return;
 		setCustomPapers((previous) => previous.filter((item) => item.id !== id));
+		setCustomGaps((previous) =>
+			previous.map((gap) => ({
+				...gap,
+				sourceIds: gap.sourceIds.filter((sourceId) => sourceId !== id),
+			})),
+		);
 		setInspection(null);
 		setInspectorOpen(false);
 	}
@@ -406,7 +443,7 @@ export function ImmersiveWorkspace() {
 			!experimentHypothesis.trim() ||
 			!experimentBaseline.trim() ||
 			!experimentMetric.trim() ||
-			!demoGaps.some((gap) => gap.id === experimentGapId)
+			!gaps.some((gap) => gap.id === experimentGapId)
 		)
 			return;
 		const experiment: Experiment = {
@@ -445,6 +482,7 @@ export function ImmersiveWorkspace() {
 			version: 1,
 			exportedAt: new Date().toISOString(),
 			customPapers,
+			customGaps,
 			savedGapIds,
 			experiments,
 		};
@@ -662,7 +700,16 @@ export function ImmersiveWorkspace() {
 								<p className="section-description">{content.description}</p>
 							</div>
 							<div className="section-action">
-								{view === "experiments" ? (
+								{view === "gaps" ? (
+									<button
+										type="button"
+										className="primary-button"
+										disabled={!papersReady || !gapsReady}
+										onClick={() => setShowAddGap(true)}
+									>
+										<Plus size={17} /> New research gap
+									</button>
+								) : view === "experiments" ? (
 									<button
 										type="button"
 										className="primary-button"
@@ -723,7 +770,7 @@ export function ImmersiveWorkspace() {
 									</div>
 									<ResearchGraph
 										papers={papers}
-										gaps={demoGaps}
+										gaps={gaps}
 										selectedId={inspection?.id ?? null}
 										onSelectPaper={inspectPaper}
 										onSelectGap={inspectGap}
@@ -746,7 +793,7 @@ export function ImmersiveWorkspace() {
 											<FolderSearch size={19} />
 										</div>
 										<strong>
-											{demoGaps.length.toString().padStart(2, "0")}
+											{gaps.length.toString().padStart(2, "0")}
 										</strong>
 										<p>Awaiting deeper validation</p>
 										<span className="metric-accent metric-accent--cyan" />
@@ -1056,7 +1103,7 @@ export function ImmersiveWorkspace() {
 													className="experiment-link"
 													onClick={() => inspectGap(experiment.gapId)}
 												>
-													{demoGaps.find((gap) => gap.id === experiment.gapId)
+													{gaps.find((gap) => gap.id === experiment.gapId)
 														?.title ?? "Linked candidate gap"}{" "}
 													<ArrowUpRight size={14} />
 												</button>
@@ -1136,7 +1183,7 @@ export function ImmersiveWorkspace() {
 								<div className="inspector-divider" />
 								<h4>Linked candidate gaps</h4>
 								<div className="inspector-links">
-									{demoGaps
+									{gaps
 										.filter((gap) => gap.sourceIds.includes(selectedPaper.id))
 										.map((gap) => (
 											<button
@@ -1147,7 +1194,7 @@ export function ImmersiveWorkspace() {
 												{gap.title} <ArrowUpRight size={14} />
 											</button>
 										))}
-									{!demoGaps.some((gap) =>
+									{!gaps.some((gap) =>
 										gap.sourceIds.includes(selectedPaper.id),
 									) && <p>No candidate gaps linked yet.</p>}
 								</div>
@@ -1225,6 +1272,15 @@ export function ImmersiveWorkspace() {
 										? "Remove from shortlist"
 										: "Save to shortlist"}
 								</button>
+								{selectedGap.id.startsWith("gap-custom-") && (
+									<button
+										type="button"
+										className="danger-button"
+										onClick={() => deleteGap(selectedGap.id)}
+									>
+										<Trash2 size={16} /> Remove candidate gap
+									</button>
+								)}
 							</div>
 						)}
 						{!selectedPaper && !selectedGap && (
@@ -1237,6 +1293,13 @@ export function ImmersiveWorkspace() {
 				)}
 			</div>
 
+			{showAddGap && (
+				<AddGapDialog
+					papers={papers}
+					onClose={() => setShowAddGap(false)}
+					onCreate={createGap}
+				/>
+			)}
 			{showAddPaper && (
 				<div className="modal-backdrop">
 					<button
@@ -1375,7 +1438,7 @@ export function ImmersiveWorkspace() {
 									required
 									onChange={(event) => setExperimentGapId(event.target.value)}
 								>
-									{demoGaps.map((gap) => (
+									{gaps.map((gap) => (
 										<option key={gap.id} value={gap.id}>
 											{gap.title}
 										</option>
