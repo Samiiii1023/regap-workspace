@@ -42,7 +42,8 @@ export function usePersistentState<T>(
 			if (
 				event.storageArea !== window.localStorage ||
 				(event.key !== key && event.key !== null)
-			) return;
+			)
+				return;
 			if (event.newValue === null) {
 				setValue(initialValueRef.current);
 				return;

@@ -1,5 +1,5 @@
-import test from "node:test";
 import assert from "node:assert/strict";
+import test from "node:test";
 
 import {
 	doiUrl,
@@ -87,11 +87,11 @@ test("unknown protocols and malformed DOIs cannot become active links", () => {
 	assert.equal(isHttpUrl("data:text/html,test"), false);
 	assert.equal(isHttpUrl("not a URL"), false);
 	assert.equal(doiUrl("bad DOI"), null);
-	assert.equal(doiUrl("10.1234/valid.paper"), "https://doi.org/10.1234/valid.paper");
 	assert.equal(
-		doiUrl("10.1234/ab/cd"),
-		"https://doi.org/10.1234/ab/cd",
+		doiUrl("10.1234/valid.paper"),
+		"https://doi.org/10.1234/valid.paper",
 	);
+	assert.equal(doiUrl("10.1234/ab/cd"), "https://doi.org/10.1234/ab/cd");
 	assert.equal(paperSourceUrl(paper), paper.url);
 	assert.equal(
 		paperSourceUrl({ ...paper, url: undefined }),
@@ -107,9 +107,19 @@ test("valid backup restores user-created papers, gaps and experiments", () => {
 	assert.deepEqual(parseWorkspaceExport(backup()), backup());
 	assert.deepEqual(
 		parseWorkspaceExport(
-			backup({ customPapers: [], customGaps: [], savedGapIds: [], experiments: [] }),
+			backup({
+				customPapers: [],
+				customGaps: [],
+				savedGapIds: [],
+				experiments: [],
+			}),
 		),
-		backup({ customPapers: [], customGaps: [], savedGapIds: [], experiments: [] }),
+		backup({
+			customPapers: [],
+			customGaps: [],
+			savedGapIds: [],
+			experiments: [],
+		}),
 	);
 });
 
@@ -129,20 +139,24 @@ test("missing or invalid backup fields are rejected", () => {
 });
 
 test("backups with broken paper or gap links cannot be imported", () => {
-	assert.throws(() =>
-		parseWorkspaceExport(
-			backup({ customGaps: [{ ...gap, sourceIds: ["manual-missing"] }] }),
-		),
+	assert.throws(
+		() =>
+			parseWorkspaceExport(
+				backup({ customGaps: [{ ...gap, sourceIds: ["manual-missing"] }] }),
+			),
 		/missing paper/,
 	);
-	assert.throws(() =>
-		parseWorkspaceExport(
-			backup({ experiments: [{ ...experiment, gapId: "gap-custom-missing" }] }),
-		),
+	assert.throws(
+		() =>
+			parseWorkspaceExport(
+				backup({
+					experiments: [{ ...experiment, gapId: "gap-custom-missing" }],
+				}),
+			),
 		/missing gap/,
 	);
-	assert.throws(() =>
-		parseWorkspaceExport(backup({ savedGapIds: ["gap-custom-missing"] })),
+	assert.throws(
+		() => parseWorkspaceExport(backup({ savedGapIds: ["gap-custom-missing"] })),
 		/missing shortlisted gap/,
 	);
 });
@@ -152,7 +166,11 @@ test("demo fixture IDs can be resolved without importing the fixtures", () => {
 	const plan = { ...experiment, gapId: "gap-1" };
 	assert.doesNotThrow(() =>
 		parseWorkspaceExport(
-			backup({ customPapers: [], customGaps: [builtInGap], experiments: [plan] }),
+			backup({
+				customPapers: [],
+				customGaps: [builtInGap],
+				experiments: [plan],
+			}),
 			["paper-1"],
 			["gap-1"],
 		),

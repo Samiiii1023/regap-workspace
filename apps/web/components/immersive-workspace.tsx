@@ -38,6 +38,8 @@ import { usePersistentState } from "@/hooks/use-persistent-state";
 import { demoGaps, demoPapers, type Gap, type Paper } from "@/lib/demo-data";
 import {
 	doiUrl,
+	type Experiment,
+	type ExperimentStatus,
 	isAppearance,
 	isExperimentList,
 	isGapList,
@@ -46,8 +48,6 @@ import {
 	isSavedIdList,
 	paperSourceUrl,
 	parseWorkspaceExport,
-	type Experiment,
-	type ExperimentStatus,
 	type WorkspaceExport,
 } from "@/lib/research-data";
 
@@ -235,11 +235,9 @@ export function ImmersiveWorkspace() {
 		"dark",
 		isAppearance,
 	);
-	const [savedGapIds, setSavedGapIds, savedReady] = usePersistentState<string[]>(
-		"regap:saved-gaps:v1",
-		[],
-		isSavedIdList,
-	);
+	const [savedGapIds, setSavedGapIds, savedReady] = usePersistentState<
+		string[]
+	>("regap:saved-gaps:v1", [], isSavedIdList);
 	const [customPapers, setCustomPapers, papersReady] = usePersistentState<
 		Paper[]
 	>("regap:papers:v1", [], isPaperList);
@@ -248,12 +246,9 @@ export function ImmersiveWorkspace() {
 		[],
 		isGapList,
 	);
-	const [experiments, setExperiments, experimentsReady] =
-		usePersistentState<Experiment[]>(
-			"regap:experiments:v1",
-			[],
-			isExperimentList,
-		);
+	const [experiments, setExperiments, experimentsReady] = usePersistentState<
+		Experiment[]
+	>("regap:experiments:v1", [], isExperimentList);
 	const [newPaperTitle, setNewPaperTitle] = useState("");
 	const [newPaperAuthors, setNewPaperAuthors] = useState("");
 	const [newPaperYear, setNewPaperYear] = useState(
@@ -396,7 +391,9 @@ export function ImmersiveWorkspace() {
 	function createGap(gap: Gap) {
 		if (!dataReady) return;
 		if (customGaps.length >= 1000) {
-			window.alert("The local gap collection is full. Export your records before adding more.");
+			window.alert(
+				"The local gap collection is full. Export your records before adding more.",
+			);
 			return;
 		}
 		setCustomGaps((previous) => [gap, ...previous]);
@@ -414,8 +411,7 @@ export function ImmersiveWorkspace() {
 			);
 			return;
 		}
-		if (!window.confirm(`Remove “${gap.title}” from your workspace?`))
-			return;
+		if (!window.confirm(`Remove “${gap.title}” from your workspace?`)) return;
 		setCustomGaps((previous) => previous.filter((item) => item.id !== id));
 		setSavedGapIds((previous) => previous.filter((item) => item !== id));
 		setInspection(null);
@@ -436,7 +432,9 @@ export function ImmersiveWorkspace() {
 		event.preventDefault();
 		if (!dataReady) return;
 		if (customPapers.length >= 1000) {
-			window.alert("The local paper library is full. Export your records before adding more.");
+			window.alert(
+				"The local paper library is full. Export your records before adding more.",
+			);
 			return;
 		}
 		const title = newPaperTitle.trim();
@@ -445,7 +443,9 @@ export function ImmersiveWorkspace() {
 		if (!Number.isInteger(year) || year < 1900 || year > 2100) return;
 		const sourceUrl = newPaperUrl.trim();
 		if (sourceUrl && !isHttpUrl(sourceUrl)) {
-			window.alert("Enter a full source URL beginning with https:// or http://.");
+			window.alert(
+				"Enter a full source URL beginning with https:// or http://.",
+			);
 			return;
 		}
 		if (newPaperDoi.trim() && !doiUrl(newPaperDoi)) {
@@ -496,7 +496,9 @@ export function ImmersiveWorkspace() {
 		event.preventDefault();
 		if (!dataReady) return;
 		if (experiments.length >= 2000) {
-			window.alert("The local experiment collection is full. Export your records before adding more.");
+			window.alert(
+				"The local experiment collection is full. Export your records before adding more.",
+			);
 			return;
 		}
 		if (
@@ -579,7 +581,8 @@ export function ImmersiveWorkspace() {
 				!window.confirm(
 					"Replace the papers, research gaps, shortlists, and experiments in this browser with the imported backup? Export your current workspace first if you want to keep it.",
 				)
-			) return;
+			)
+				return;
 			setCustomPapers(imported.customPapers);
 			setCustomGaps(imported.customGaps);
 			setSavedGapIds(imported.savedGapIds);
@@ -1109,7 +1112,10 @@ export function ImmersiveWorkspace() {
 											· {savedGapIds.length} shortlisted
 										</span>
 									</div>
-									<fieldset className="gap-filter-controls" aria-label="Filter gaps">
+									<fieldset
+										className="gap-filter-controls"
+										aria-label="Filter gaps"
+									>
 										<button
 											type="button"
 											aria-pressed={gapFilter === "all"}

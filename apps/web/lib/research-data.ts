@@ -36,7 +36,10 @@ function hasText(value: unknown, maxLength = 2000): value is string {
 }
 
 function hasOptionalText(value: unknown, maxLength = 2000): boolean {
-	return value === undefined || (typeof value === "string" && value.length <= maxLength);
+	return (
+		value === undefined ||
+		(typeof value === "string" && value.length <= maxLength)
+	);
 }
 
 function hasUniqueIds(items: Array<{ id: string }>): boolean {
@@ -54,8 +57,7 @@ export function isHttpUrl(value: string): boolean {
 
 export function doiUrl(doi: string): string | null {
 	const trimmed = doi.trim();
-	if (!/^10\.\d{4,9}\/\S+$/i.test(trimmed) || trimmed.length > 300)
-		return null;
+	if (!/^10\.\d{4,9}\/\S+$/i.test(trimmed) || trimmed.length > 300) return null;
 
 	const segments = trimmed.split("/");
 	return `https://doi.org/${segments.map(encodeURIComponent).join("/")}`;
