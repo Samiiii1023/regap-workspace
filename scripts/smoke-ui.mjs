@@ -88,6 +88,7 @@ async function run() {
 	await graph.getByRole("checkbox", { name: "Papers" }).uncheck();
 	assert.equal(await graph.locator(".graph-node--paper").count(), 0);
 	await graph.getByRole("checkbox", { name: "Papers" }).check();
+	await graph.locator(".graph-node--paper").first().waitFor();
 	assert.equal((await graph.locator(".graph-node--paper").count()) > 0, true);
 
 	await page.getByRole("button", { name: "Switch to dark theme" }).click();
