@@ -23,7 +23,6 @@ import {
 	PanelRightOpen,
 	Plus,
 	Search,
-	ShieldCheck,
 	Sparkles,
 	Sun,
 	Target,
