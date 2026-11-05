@@ -7,6 +7,7 @@ export type Paper = {
 	summary: string;
 	limitation: string;
 	doi?: string;
+	url?: string;
 };
 
 export type Gap = {
