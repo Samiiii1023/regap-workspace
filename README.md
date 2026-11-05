@@ -1,159 +1,78 @@
-# Turborepo starter
+# Re:Gap
 
-This Turborepo starter is maintained by the Turborepo core team.
+**A visual, evidence-first workspace for research discovery.**
 
-## Using this example
+Re:Gap helps researchers organize literature, inspect limitations, explore candidate research gaps, and translate research questions into concrete experiment plans. Its interactive perspective graph displays links between papers and gap candidates.
 
-Run the following command:
+> **Prototype scope:** The bundled papers and gap candidates are fictional examples, not authentic citations or validated discoveries. The frontend runs locally in the browser; it has no external literature database, AI novelty analysis, authentication, or shared persistence yet.
 
-```sh
-npx create-turbo@latest
+## What works
+
+- **Overview:** A responsive workspace with a draggable, zoomable **3D-projected knowledge graph**. Clicking a paper or gap node opens its evidence context in the source inspector.
+- **Paper library:** Search and sort, add custom papers (title, authors, year, venue, notes), inspect papers, and delete manually added records.
+- **Gap explorer:** Read proposed questions, inspect linked sources, shortlist candidates, and create experiments from a gap.
+- **Experiment planning:** Save hypotheses, baselines, and success metrics; track status as planned, in progress, or completed; delete plans.
+- **Usability:** Dark/light theme, responsive navigation, keyboard search (**⌘/Ctrl + K** or **/**), reduced-motion support, and JSON export of locally stored user data.
+
+All interactive state is stored in browser `localStorage` (per browser/device). It is **not synchronized** across teammates or sessions on different devices. Exported JSON is a backup snapshot, not an import feature.
+
+### Run locally
+
+Requires **Node.js 24+** and **pnpm 11.25.0**.
+
+```bash
+corepack enable
+pnpm install --frozen-lockfile
+pnpm --filter web dev
 ```
 
-## What's inside?
+Visit **http://localhost:3000**.
 
-This Turborepo includes the following packages/apps:
+### Check before merging
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```bash
+pnpm exec biome ci .
+pnpm check-types
+pnpm exec turbo run build --filter=web
 ```
 
-Without global `turbo`, use your package manager:
+Pull requests to `main` run these checks in GitHub Actions.
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm exec turbo build
-pnpm exec turbo build
+## Repository structure
+
+```text
+apps/web/
+  app/
+    layout.tsx              Fonts, metadata, and styles
+    page.tsx                App entry point
+    workspace.css           Research workspace design system
+    globals.css             Tailwind and base tokens
+  components/
+    immersive-workspace.tsx Main flows, navigation, inspector, forms
+    research-graph.tsx      Interactive 3D perspective graph
+    research-workspace.tsx  Original prototype (kept for reference)
+  hooks/
+    use-persistent-state.ts Browser state persistence
+  lib/
+    demo-data.ts            Clearly fictional paper and gap fixtures
+packages/                   Shared UI and monorepo configuration
+.github/workflows/ci.yml    PR quality gate
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## How to work as a team
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Keep `main` green. Each teammate works on a separate `feat/*` branch, opens a pull request, waits for CI, and requests review before merging. Do not change another person's active branch or commit credentials/secrets. Recommended divisions:
 
-```sh
-turbo build --filter=docs
-```
+1. **Frontend & accessibility:** UI, graphs, keyboard interactions, responsive layouts, integration tests.
+2. **Literature & evidence model:** real paper metadata sources, provenance, source links, limitation extraction, evidence traceability.
+3. **Experiment & gap reasoning:** validation methods, experiment schemas, backend workflows, evaluation.
 
-Without global `turbo`:
+## Next milestones
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+1. Replace fictional fixtures with a typed backend/API and real, verified citations.
+2. Introduce user accounts, database persistence, and shared team workspaces.
+3. Add paper provenance (DOI, URL, quote spans, retrieval timestamps), citation parsing, and evidence links.
+4. Build novelty-check workflows that actively search for contradicting related work, with confidence justified by sources.
+5. Create unit, integration, accessibility, and end-to-end coverage before a production launch.
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+**Research safeguard:** An inferred research gap is a *hypothesis* until verified through a literature review. Re:Gap must not label generated claims as proven novelty.
