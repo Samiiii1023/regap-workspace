@@ -391,12 +391,14 @@ export function ImmersiveWorkspace() {
 
 	function deleteGap(id: string) {
 		const gap = customGaps.find((item) => item.id === id);
-		if (
-			!gap ||
-			!window.confirm(
-				`Remove “${gap.title}”? Any existing experiment plans will be kept.`,
-			)
-		)
+		if (!gap) return;
+		if (experiments.some((experiment) => experiment.gapId === id)) {
+			window.alert(
+				"An experiment plan still references this gap. Delete that plan before removing its research question.",
+			);
+			return;
+		}
+		if (!window.confirm(`Remove “${gap.title}” from your workspace?`))
 			return;
 		setCustomGaps((previous) => previous.filter((item) => item.id !== id));
 		setSavedGapIds((previous) => previous.filter((item) => item !== id));
@@ -420,17 +422,13 @@ export function ImmersiveWorkspace() {
 		const year = Number(newPaperYear);
 		if (!Number.isInteger(year) || year < 1900 || year > 2100) return;
 		const sourceUrl = newPaperUrl.trim();
-		if (sourceUrl) {
-			try {
-				const parsedUrl = new URL(sourceUrl);
-				if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:")
-					throw new Error("Only HTTP(S) links are supported.");
-			} catch {
-				window.alert(
-					"Enter a full source URL beginning with https:// or http://.",
-				);
-				return;
-			}
+		if (sourceUrl && !isHttpUrl(sourceUrl)) {
+			window.alert("Enter a full source URL beginning with https:// or http://.");
+			return;
+		}
+		if (newPaperDoi.trim() && !doiUrl(newPaperDoi)) {
+			window.alert("Enter a valid DOI, such as 10.1000/example.");
+			return;
 		}
 		const paper: Paper = {
 			id: `manual-${crypto.randomUUID()}`,
@@ -458,18 +456,16 @@ export function ImmersiveWorkspace() {
 
 	function deletePaper(id: string) {
 		const paper = customPapers.find((item) => item.id === id);
-		if (
-			!paper ||
-			!window.confirm(`Remove “${paper.title}” from your local library?`)
-		)
+		if (!paper) return;
+		if (gaps.some((gap) => gap.sourceIds.includes(id))) {
+			window.alert(
+				"This paper supports a research gap. Remove that candidate gap before deleting its evidence.",
+			);
+			return;
+		}
+		if (!window.confirm(`Remove “${paper.title}” from your local library?`))
 			return;
 		setCustomPapers((previous) => previous.filter((item) => item.id !== id));
-		setCustomGaps((previous) =>
-			previous.map((gap) => ({
-				...gap,
-				sourceIds: gap.sourceIds.filter((sourceId) => sourceId !== id),
-			})),
-		);
 		setInspection(null);
 		setInspectorOpen(false);
 	}
@@ -515,7 +511,8 @@ export function ImmersiveWorkspace() {
 	}
 
 	function exportWorkspace() {
-		const data = {
+		if (!dataReady) return;
+		const data: WorkspaceExport = {
 			format: "regap-local-export",
 			version: 1,
 			exportedAt: new Date().toISOString(),
@@ -532,7 +529,42 @@ export function ImmersiveWorkspace() {
 		link.href = url;
 		link.download = "regap-workspace.json";
 		link.click();
-		URL.revokeObjectURL(url);
+		window.setTimeout(() => URL.revokeObjectURL(url), 0);
+	}
+
+	async function importWorkspace(event: React.ChangeEvent<HTMLInputElement>) {
+		const file = event.target.files?.[0];
+		event.target.value = "";
+		if (!file || !dataReady) return;
+		setImportError(null);
+		if (file.size > 5_000_000) {
+			setImportError("This backup is too large (maximum 5 MB).");
+			return;
+		}
+		try {
+			const parsed: unknown = JSON.parse(await file.text());
+			const imported = parseWorkspaceExport(
+				parsed,
+				demoPapers.map((paper) => paper.id),
+				demoGaps.map((gap) => gap.id),
+			);
+			if (
+				!window.confirm(
+					"Replace the papers, research gaps, shortlists, and experiments in this browser with the imported backup? Export your current workspace first if you want to keep it.",
+				)
+			) return;
+			setCustomPapers(imported.customPapers);
+			setCustomGaps(imported.customGaps);
+			setSavedGapIds(imported.savedGapIds);
+			setExperiments(imported.experiments);
+			setInspectorOpen(false);
+			setInspection(null);
+			navigate("overview");
+		} catch (error) {
+			setImportError(
+				error instanceof Error ? error.message : "Could not read this backup.",
+			);
+		}
 	}
 
 	const content = viewCopy[view];
