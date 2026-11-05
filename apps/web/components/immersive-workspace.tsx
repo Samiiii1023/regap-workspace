@@ -35,22 +35,23 @@ import { AddGapDialog } from "@/components/add-gap-dialog";
 import { ResearchGraph } from "@/components/research-graph";
 import { usePersistentState } from "@/hooks/use-persistent-state";
 import { demoGaps, demoPapers, type Gap, type Paper } from "@/lib/demo-data";
+import {
+	doiUrl,
+	isAppearance,
+	isExperimentList,
+	isGapList,
+	isHttpUrl,
+	isPaperList,
+	isSavedIdList,
+	paperSourceUrl,
+	parseWorkspaceExport,
+	type Experiment,
+	type ExperimentStatus,
+	type WorkspaceExport,
+} from "@/lib/research-data";
 
 type View = "overview" | "library" | "gaps" | "experiments";
 type Inspection = { kind: "paper" | "gap"; id: string };
-type ExperimentStatus = "planned" | "in-progress" | "complete";
-
-type Experiment = {
-	id: string;
-	gapId: string;
-	title: string;
-	hypothesis: string;
-	baseline: string;
-	metric: string;
-	status: ExperimentStatus;
-	createdAt: string;
-};
-
 const navigation = [
 	{ id: "overview", label: "Overview", icon: Layers3 },
 	{ id: "library", label: "Paper library", icon: BookOpen },
@@ -94,22 +95,6 @@ function formatDate(value: string) {
 		day: "numeric",
 		year: "numeric",
 	});
-}
-
-function resolvePaperSourceUrl(paper: Paper): string | null {
-	if (paper.url) {
-		try {
-			const url = new URL(paper.url);
-			if (url.protocol === "https:" || url.protocol === "http:")
-				return url.toString();
-		} catch {
-			// Fall back to a valid DOI, if one was supplied.
-		}
-	}
-	const doi = paper.doi?.trim();
-	if (doi && doi.startsWith("10.") && doi.includes("/"))
-		return `https://doi.org/${encodeURIComponent(doi)}`;
-	return null;
 }
 
 function PaperCard({
@@ -242,25 +227,32 @@ export function ImmersiveWorkspace() {
 	const [showAddPaper, setShowAddPaper] = useState(false);
 	const [showAddGap, setShowAddGap] = useState(false);
 	const [showExperimentForm, setShowExperimentForm] = useState(false);
+	const [gapFilter, setGapFilter] = useState<"all" | "saved">("all");
+	const [importError, setImportError] = useState<string | null>(null);
 	const [appearance, setAppearance] = usePersistentState<"dark" | "light">(
 		"regap:appearance:v1",
 		"dark",
+		isAppearance,
 	);
-	const [savedGapIds, setSavedGapIds] = usePersistentState<string[]>(
+	const [savedGapIds, setSavedGapIds, savedReady] = usePersistentState<string[]>(
 		"regap:saved-gaps:v1",
 		[],
+		isSavedIdList,
 	);
 	const [customPapers, setCustomPapers, papersReady] = usePersistentState<
 		Paper[]
-	>("regap:papers:v1", []);
+	>("regap:papers:v1", [], isPaperList);
 	const [customGaps, setCustomGaps, gapsReady] = usePersistentState<Gap[]>(
 		"regap:gaps:v1",
 		[],
+		isGapList,
 	);
-	const [experiments, setExperiments] = usePersistentState<Experiment[]>(
-		"regap:experiments:v1",
-		[],
-	);
+	const [experiments, setExperiments, experimentsReady] =
+		usePersistentState<Experiment[]>(
+			"regap:experiments:v1",
+			[],
+			isExperimentList,
+		);
 	const [newPaperTitle, setNewPaperTitle] = useState("");
 	const [newPaperAuthors, setNewPaperAuthors] = useState("");
 	const [newPaperYear, setNewPaperYear] = useState(
@@ -276,6 +268,7 @@ export function ImmersiveWorkspace() {
 	const [experimentBaseline, setExperimentBaseline] = useState("");
 	const [experimentMetric, setExperimentMetric] = useState("");
 	const searchRef = useRef<HTMLInputElement>(null);
+	const importRef = useRef<HTMLInputElement>(null);
 	const paperTitleRef = useRef<HTMLInputElement>(null);
 	const experimentTitleRef = useRef<HTMLInputElement>(null);
 
@@ -300,10 +293,12 @@ export function ImmersiveWorkspace() {
 						: b.year - a.year,
 			);
 	}, [papers, normalizedQuery, sort]);
-	const filteredGaps = gaps.filter((gap) =>
-		`${gap.title} ${gap.description} ${gap.nextStep}`
-			.toLowerCase()
-			.includes(normalizedQuery),
+	const filteredGaps = gaps.filter(
+		(gap) =>
+			(gapFilter !== "saved" || savedGapIds.includes(gap.id)) &&
+			`${gap.title} ${gap.description} ${gap.nextStep}`
+				.toLowerCase()
+				.includes(normalizedQuery),
 	);
 	const filteredExperiments = experiments.filter((experiment) =>
 		`${experiment.title} ${experiment.hypothesis} ${experiment.metric}`
@@ -315,13 +310,14 @@ export function ImmersiveWorkspace() {
 			? papers.find((paper) => paper.id === inspection.id)
 			: undefined;
 	const selectedPaperSourceUrl = selectedPaper
-		? resolvePaperSourceUrl(selectedPaper)
+		? paperSourceUrl(selectedPaper)
 		: null;
 	const selectedGap =
 		inspection?.kind === "gap"
 			? gaps.find((gap) => gap.id === inspection.id)
 			: undefined;
 	const shortlistedGaps = gaps.filter((gap) => savedGapIds.includes(gap.id));
+	const dataReady = papersReady && gapsReady && savedReady && experimentsReady;
 
 	useEffect(() => {
 		function onKeyDown(event: KeyboardEvent) {
@@ -359,7 +355,13 @@ export function ImmersiveWorkspace() {
 	function navigate(next: View) {
 		setView(next);
 		setQuery("");
+		setGapFilter("all");
 		setMenuOpen(false);
+	}
+
+	function viewShortlist() {
+		navigate("gaps");
+		setGapFilter("saved");
 	}
 
 	function inspectPaper(id: string) {
