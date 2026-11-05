@@ -76,7 +76,15 @@ export function ResearchGraph({
 	const drag = useRef<{ x: number; y: number; pointerId: number } | null>(null);
 
 	const nodes = useMemo<GraphNode[]>(() => {
-		const paperNodes = papers.slice(0, 8).map((paper, index) => {
+		const visibleGaps = gaps.slice(0, 5);
+		const linkedPaperIds = new Set(
+			visibleGaps.flatMap((gap) => gap.sourceIds),
+		);
+		const prioritizedPapers = [
+			...papers.filter((paper) => linkedPaperIds.has(paper.id)),
+			...papers.filter((paper) => !linkedPaperIds.has(paper.id)),
+		].slice(0, 8);
+		const paperNodes = prioritizedPapers.map((paper, index) => {
 			const [x, y, z] = anchors[index % anchors.length] ?? anchors[0];
 			return {
 				id: paper.id,
@@ -88,8 +96,8 @@ export function ResearchGraph({
 			};
 		});
 
-		const gapNodes = gaps.slice(0, 5).map((gap, index) => {
-			const angle = (index * Math.PI * 2) / Math.max(gaps.length, 2) + 0.5;
+		const gapNodes = visibleGaps.map((gap, index) => {
+			const angle = (index * Math.PI * 2) / Math.max(visibleGaps.length, 2) + 0.5;
 			return {
 				id: gap.id,
 				title: gap.title,
@@ -156,7 +164,9 @@ export function ResearchGraph({
 			<div className="graph-toolbar">
 				<span className="graph-live-dot" />
 				<span>Knowledge constellation</span>
-				<span className="graph-toolbar-count">{nodes.length} nodes</span>
+				<span className="graph-toolbar-count">
+					{nodes.length} of {papers.length + gaps.length} nodes
+				</span>
 			</div>
 
 			<section
@@ -252,7 +262,25 @@ export function ResearchGraph({
 						<i className="graph-legend-gap" /> Candidate gaps
 					</span>
 				</div>
-				<fieldset className="graph-controls" aria-label="Graph controls">
+				<fieldset
+					className="graph-controls"
+					aria-label="Graph controls; use arrow keys while focused on a control to rotate the graph"
+					onKeyDown={(event) => {
+						if (event.key === "ArrowLeft") {
+							event.preventDefault();
+							setYaw((previous) => previous - 15);
+						} else if (event.key === "ArrowRight") {
+							event.preventDefault();
+							setYaw((previous) => previous + 15);
+						} else if (event.key === "ArrowUp") {
+							event.preventDefault();
+							setPitch((previous) => Math.min(70, previous + 15));
+						} else if (event.key === "ArrowDown") {
+							event.preventDefault();
+							setPitch((previous) => Math.max(-70, previous - 15));
+						}
+					}}
+				>
 					<button
 						type="button"
 						aria-label="Zoom out"
@@ -289,7 +317,7 @@ export function ResearchGraph({
 				</fieldset>
 			</div>
 			<p className="graph-hint">
-				Drag to orbit · Select a node to inspect its evidence
+				Drag to orbit · Arrow keys on controls rotate · Select a node to inspect evidence
 			</p>
 		</div>
 	);
