@@ -1092,7 +1092,7 @@ export function ImmersiveWorkspace() {
 											· {savedGapIds.length} shortlisted
 										</span>
 									</div>
-									<div className="gap-filter-controls" aria-label="Filter gaps">
+									<fieldset className="gap-filter-controls" aria-label="Filter gaps">
 										<button
 											type="button"
 											aria-pressed={gapFilter === "all"}
@@ -1107,7 +1107,7 @@ export function ImmersiveWorkspace() {
 										>
 											<Bookmark size={14} /> Shortlisted ({savedGapIds.length})
 										</button>
-									</div>
+									</fieldset>
 								</div>
 								<div className="gaps-grid">
 									{filteredGaps.map((gap) => (
