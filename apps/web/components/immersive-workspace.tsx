@@ -329,6 +329,10 @@ export function ImmersiveWorkspace() {
 			const typing =
 				element instanceof HTMLElement &&
 				(element.matches("input,textarea,select") || element.isContentEditable);
+			if (
+				document.querySelector('[role="dialog"][aria-modal="true"]') &&
+				event.key !== "Escape"
+			) return;
 			if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
 				event.preventDefault();
 				searchRef.current?.focus();
@@ -381,6 +385,7 @@ export function ImmersiveWorkspace() {
 	}
 
 	function toggleSavedGap(id: string) {
+		if (!dataReady) return;
 		setSavedGapIds((previous) =>
 			previous.includes(id)
 				? previous.filter((item) => item !== id)
@@ -827,7 +832,7 @@ export function ImmersiveWorkspace() {
 									<button
 										type="button"
 										className="primary-button"
-										disabled={!papersReady || !gapsReady}
+										disabled={!dataReady}
 										onClick={() => setShowAddGap(true)}
 									>
 										<Plus size={17} /> New research gap
@@ -845,7 +850,7 @@ export function ImmersiveWorkspace() {
 									<button
 										type="button"
 										className="primary-button"
-										disabled={!papersReady}
+										disabled={!dataReady}
 										onClick={() => setShowAddPaper(true)}
 									>
 										<Plus size={17} /> Add a paper
