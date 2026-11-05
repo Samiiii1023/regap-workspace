@@ -983,8 +983,9 @@ export function ImmersiveWorkspace() {
 															{paper.title}
 														</strong>
 														<small>
-															{paper.venue} <span className="recent-paper-separator">·</span>{" "}
-																{paper.year}
+															{paper.venue}{" "}
+															<span className="recent-paper-separator">·</span>{" "}
+															{paper.year}
 														</small>
 													</span>
 													<span className="recent-paper-arrow">
