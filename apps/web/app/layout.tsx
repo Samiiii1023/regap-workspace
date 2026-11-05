@@ -16,7 +16,8 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
 	title: "Re:Gap | Research Intelligence",
-	description: "Connect literature, inspect limitations, explore research gaps, and plan evidence-driven experiments.",
+	description:
+		"Connect literature, inspect limitations, explore research gaps, and plan evidence-driven experiments.",
 };
 
 export default function RootLayout({
@@ -26,7 +27,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
+			<body className={`${geistSans.variable} ${geistMono.variable}`}>
+				{children}
+			</body>
 		</html>
 	);
 }

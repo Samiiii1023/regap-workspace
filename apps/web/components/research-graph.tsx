@@ -39,7 +39,12 @@ const anchors = [
 	[-202, 8, -50],
 ] as const;
 
-function project(node: GraphNode, pitch: number, yaw: number, zoom: number): ProjectedNode {
+function project(
+	node: GraphNode,
+	pitch: number,
+	yaw: number,
+	zoom: number,
+): ProjectedNode {
 	const rx = (pitch * Math.PI) / 180;
 	const ry = (yaw * Math.PI) / 180;
 	const x1 = node.x * Math.cos(ry) + node.z * Math.sin(ry);
@@ -73,7 +78,14 @@ export function ResearchGraph({
 	const nodes = useMemo<GraphNode[]>(() => {
 		const paperNodes = papers.slice(0, 8).map((paper, index) => {
 			const [x, y, z] = anchors[index];
-			return { id: paper.id, title: paper.title, kind: "paper" as const, x, y, z };
+			return {
+				id: paper.id,
+				title: paper.title,
+				kind: "paper" as const,
+				x,
+				y,
+				z,
+			};
 		});
 
 		const gapNodes = gaps.slice(0, 5).map((gap, index) => {
@@ -111,8 +123,13 @@ export function ResearchGraph({
 	}
 
 	function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
-		if (event.button !== 0 || (event.target as HTMLElement).closest("button")) return;
-		drag.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+		if (event.button !== 0 || (event.target as HTMLElement).closest("button"))
+			return;
+		drag.current = {
+			x: event.clientX,
+			y: event.clientY,
+			pointerId: event.pointerId,
+		};
 		event.currentTarget.setPointerCapture(event.pointerId);
 	}
 
@@ -161,7 +178,13 @@ export function ResearchGraph({
 					aria-hidden="true"
 				>
 					<defs>
-						<linearGradient id="graph-edge-gradient" x1="0" y1="0" x2="1" y2="1">
+						<linearGradient
+							id="graph-edge-gradient"
+							x1="0"
+							y1="0"
+							x2="1"
+							y2="1"
+						>
 							<stop offset="0%" stopColor="#8d80ee" stopOpacity="0.5" />
 							<stop offset="100%" stopColor="#67d9d2" stopOpacity="0.65" />
 						</linearGradient>
@@ -184,7 +207,9 @@ export function ResearchGraph({
 					<circle cx="310" cy="200" r="27" fill="#9a8cff" fillOpacity="0.07" />
 				</svg>
 				<div className="graph-origin" aria-hidden="true">
-					<div className="graph-origin-core">R<span>:</span>G</div>
+					<div className="graph-origin-core">
+						R<span>:</span>G
+					</div>
 				</div>
 				{[...projected]
 					.sort((a, b) => a.depth - b.depth)
@@ -196,7 +221,9 @@ export function ResearchGraph({
 							aria-label={`Inspect ${node.kind}: ${node.title}`}
 							aria-pressed={selectedId === node.id}
 							onClick={() =>
-								node.kind === "paper" ? onSelectPaper(node.id) : onSelectGap(node.id)
+								node.kind === "paper"
+									? onSelectPaper(node.id)
+									: onSelectGap(node.id)
 							}
 							className={`graph-node graph-node--${node.kind} ${selectedId === node.id ? "graph-node--selected" : ""}`}
 							style={{
@@ -207,7 +234,9 @@ export function ResearchGraph({
 								opacity: Math.max(0.58, Math.min(1, 0.85 + node.depth / 500)),
 							}}
 						>
-							<span className="graph-node-ring"><span className="graph-node-center" /></span>
+							<span className="graph-node-ring">
+								<span className="graph-node-center" />
+							</span>
 							<span className="graph-node-label">{node.title}</span>
 						</button>
 					))}
@@ -216,24 +245,36 @@ export function ResearchGraph({
 
 			<div className="graph-bottom">
 				<div className="graph-legend">
-					<span><i className="graph-legend-paper" /> Papers</span>
-					<span><i className="graph-legend-gap" /> Candidate gaps</span>
+					<span>
+						<i className="graph-legend-paper" /> Papers
+					</span>
+					<span>
+						<i className="graph-legend-gap" /> Candidate gaps
+					</span>
 				</div>
 				<fieldset className="graph-controls" aria-label="Graph controls">
 					<button
 						type="button"
 						aria-label="Zoom out"
-						onClick={() => setZoom((previous) => Math.max(0.6, previous - 0.12))}
+						onClick={() =>
+							setZoom((previous) => Math.max(0.6, previous - 0.12))
+						}
 					>
 						<Minus size={15} />
 					</button>
-					<button type="button" aria-label="Reset graph orientation" onClick={reset}>
+					<button
+						type="button"
+						aria-label="Reset graph orientation"
+						onClick={reset}
+					>
 						<RotateCcw size={14} />
 					</button>
 					<button
 						type="button"
 						aria-label="Zoom in"
-						onClick={() => setZoom((previous) => Math.min(1.5, previous + 0.12))}
+						onClick={() =>
+							setZoom((previous) => Math.min(1.5, previous + 0.12))
+						}
 					>
 						<Plus size={15} />
 					</button>
@@ -247,7 +288,9 @@ export function ResearchGraph({
 					</button>
 				</fieldset>
 			</div>
-			<p className="graph-hint">Drag to orbit · Select a node to inspect its evidence</p>
+			<p className="graph-hint">
+				Drag to orbit · Select a node to inspect its evidence
+			</p>
 		</div>
 	);
 }
