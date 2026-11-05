@@ -86,10 +86,11 @@ async function run() {
 	await graph.getByRole("button", { name: "Zoom in" }).click();
 	await graph.getByRole("button", { name: "Reset graph orientation" }).click();
 	await graph.getByRole("checkbox", { name: "Papers" }).uncheck();
-	assert.equal(await graph.locator(".graph-node--paper").count(), 0);
+	await graph.locator(".atlas-node--paper").first().waitFor({ state: "detached" });
+	assert.equal(await graph.locator(".atlas-node--paper").count(), 0);
 	await graph.getByRole("checkbox", { name: "Papers" }).check();
-	await graph.locator(".graph-node--paper").first().waitFor();
-	assert.equal((await graph.locator(".graph-node--paper").count()) > 0, true);
+	await graph.locator(".atlas-node--paper").first().waitFor();
+	assert.equal((await graph.locator(".atlas-node--paper").count()) > 0, true);
 
 	await page.getByRole("button", { name: "Switch to dark theme" }).click();
 	assert.equal(await page.locator(".regap-app.regap-light").count(), 0);
