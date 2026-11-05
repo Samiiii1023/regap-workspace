@@ -71,11 +71,13 @@ async function run() {
 	);
 	await graph.getByRole("button", { name: "3D", exact: true }).click();
 	await graph.getByRole("button", { name: "List", exact: true }).click();
+	await graph.locator(".atlas-data-list > button").nth(4).waitFor();
 	assert.equal(
 		(await graph.locator(".atlas-data-list > button").count()) >= 5,
 		true,
 	);
 	await graph.getByRole("button", { name: "Connections", exact: true }).click();
+	await graph.locator(".atlas-data-list > button").first().waitFor();
 	assert.equal(
 		(await graph.locator(".atlas-data-list > button").count()) >= 1,
 		true,
