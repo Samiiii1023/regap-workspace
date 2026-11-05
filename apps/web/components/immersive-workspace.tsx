@@ -424,7 +424,9 @@ export function ImmersiveWorkspace() {
 				if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:")
 					throw new Error("Only HTTP(S) links are supported.");
 			} catch {
-				window.alert("Enter a full source URL beginning with https:// or http://.");
+				window.alert(
+					"Enter a full source URL beginning with https:// or http://.",
+				);
 				return;
 			}
 		}
