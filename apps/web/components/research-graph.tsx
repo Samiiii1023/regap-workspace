@@ -170,7 +170,7 @@ export function ResearchGraph({
 
 			<section
 				className="graph-stage"
-				aria-label="Interactive three-dimensional research graph. Drag the background to rotate, or choose a node to inspect."
+				aria-label="Interactive perspective research graph. Drag the background to rotate, or choose a node to inspect."
 				onPointerDown={onPointerDown}
 				onPointerMove={onPointerMove}
 				onPointerUp={stopDragging}
@@ -194,8 +194,8 @@ export function ResearchGraph({
 							x2="1"
 							y2="1"
 						>
-							<stop offset="0%" stopColor="#8d80ee" stopOpacity="0.5" />
-							<stop offset="100%" stopColor="#67d9d2" stopOpacity="0.65" />
+							<stop offset="0%" stopColor="#c9fb98" stopOpacity="0.5" />
+							<stop offset="100%" stopColor="#77e0d7" stopOpacity="0.65" />
 						</linearGradient>
 					</defs>
 					{connections.map((connection) =>
@@ -212,8 +212,8 @@ export function ResearchGraph({
 							/>
 						) : null,
 					)}
-					<circle cx="310" cy="200" r="39" fill="#9a8cff" fillOpacity="0.035" />
-					<circle cx="310" cy="200" r="27" fill="#9a8cff" fillOpacity="0.07" />
+					<circle cx="310" cy="200" r="39" fill="#b6ed9b" fillOpacity="0.035" />
+					<circle cx="310" cy="200" r="27" fill="#b6ed9b" fillOpacity="0.07" />
 				</svg>
 				<div className="graph-origin" aria-hidden="true">
 					<div className="graph-origin-core">
