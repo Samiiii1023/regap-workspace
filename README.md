@@ -9,7 +9,7 @@ Re:Gap helps researchers organize literature, inspect limitations, explore candi
 ## What works
 
 - **Overview:** A responsive workspace with a draggable, zoomable **3D-projected knowledge graph**. Clicking a paper or gap node opens its evidence context in the source inspector.
-- **Paper library:** Search and sort, add custom papers (title, authors, year, venue, notes), inspect papers, and delete manually added records.
+- **Paper library:** Search and sort, add custom papers (title, authors, year, venue, notes, optional DOI/source URL), inspect papers, open manually supplied source links, and delete manually added records.
 - **Gap explorer:** Create your own candidate research questions, link them to papers, inspect evidence, shortlist ideas, delete your own candidates, and create experiments from them. Custom gaps are saved locally. The graph prioritizes papers linked to the visible gaps.
 - **Experiment planning:** Save hypotheses, baselines, and success metrics; track status as planned, in progress, or completed; delete plans.
 - **Usability:** Dark/light theme, responsive navigation, keyboard search (**⌘/Ctrl + K** or **/**), draggable graph with keyboard rotation (arrow keys while a graph control is focused), reduced-motion support, and JSON export of locally stored user data.
