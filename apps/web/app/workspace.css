@@ -1015,7 +1015,7 @@
 	color: var(--rg-muted);
 	font-size: 10.5px;
 }
-.recent-paper-body small span {
+.recent-paper-separator {
 	margin: 0 4px;
 }
 .recent-paper-arrow {
