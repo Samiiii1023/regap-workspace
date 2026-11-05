@@ -47,12 +47,16 @@ async function run() {
 	assert.equal(await page.locator(".regap-app.regap-light").count(), 0);
 	await page.getByRole("button", { name: "Switch to light theme" }).click();
 	assert.equal(await page.locator(".regap-app.regap-light").count(), 1);
-	const lightSurface = await page.locator(".regap-app").evaluate((element) =>
-		getComputedStyle(element).getPropertyValue("--rg-surface").trim(),
-	);
+	const lightSurface = await page
+		.locator(".regap-app")
+		.evaluate((element) =>
+			getComputedStyle(element).getPropertyValue("--rg-surface").trim(),
+		);
 	assert.equal(lightSurface, "#fffefa");
 	await page.reload();
-	await page.waitForFunction(() => document.querySelector(".regap-app.regap-light"));
+	await page.waitForFunction(() =>
+		document.querySelector(".regap-app.regap-light"),
+	);
 	await page.getByRole("button", { name: "Switch to dark theme" }).click();
 	assert.equal(await page.locator(".regap-app.regap-light").count(), 0);
 	assert.equal((await page.locator(".graph-node").count()) > 0, true);
