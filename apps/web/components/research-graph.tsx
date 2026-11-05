@@ -77,7 +77,7 @@ export function ResearchGraph({
 
 	const nodes = useMemo<GraphNode[]>(() => {
 		const paperNodes = papers.slice(0, 8).map((paper, index) => {
-			const [x, y, z] = anchors[index];
+			const [x, y, z] = anchors[index % anchors.length] ?? anchors[0];
 			return {
 				id: paper.id,
 				title: paper.title,
