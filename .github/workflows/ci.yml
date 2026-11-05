@@ -17,19 +17,19 @@ concurrency:
 jobs:
   build-and-test:
     name: Build and Quality Checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 11.25.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
@@ -37,11 +37,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check formatting and linting
-        run: pnpm exec biome ci .
+      - name: Validate research data and backup behavior
+        run: pnpm test:unit
 
       - name: Check types
         run: pnpm check-types
 
       - name: Build web app
         run: pnpm exec turbo run build --filter=web
+
+      - name: Check formatting and linting
+        run: pnpm exec biome ci .

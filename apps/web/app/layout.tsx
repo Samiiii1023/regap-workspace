@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
-
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+import "./workspace.css";
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
 	variable: "--font-geist-sans",
+	display: "swap",
 });
 const geistMono = localFont({
 	src: "./fonts/GeistMonoVF.woff",
 	variable: "--font-geist-mono",
+	display: "swap",
 });
 
 export const metadata: Metadata = {
-	title: "Re:Gap",
-	description: "Challenging Assumptions, Exposing Research Gaps",
+	title: "Re:Gap | Research Intelligence",
+	description:
+		"Connect literature, inspect limitations, explore research gaps, and plan evidence-driven experiments.",
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" className={cn("font-sans", geist.variable)}>
+		<html lang="en">
 			<body className={`${geistSans.variable} ${geistMono.variable}`}>
 				{children}
 			</body>

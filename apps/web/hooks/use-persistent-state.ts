@@ -1,34 +1,66 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export function usePersistentState<T>(key: string, initialValue: T) {
+type Validator<T> = (input: unknown) => input is T;
+
+export function usePersistentState<T>(
+	key: string,
+	initialValue: T,
+	validate?: Validator<T>,
+) {
 	const [value, setValue] = useState<T>(initialValue);
 	const [ready, setReady] = useState(false);
+	const initialValueRef = useRef(initialValue);
 
-	// Load previously saved state after mounting.
 	useEffect(() => {
-		try {
-			const storedValue = window.localStorage.getItem(key);
-
-			if (storedValue !== null) {
-				setValue(JSON.parse(storedValue) as T);
+		function decode(raw: string | null): T | null {
+			if (raw === null) return null;
+			try {
+				const parsed: unknown = JSON.parse(raw);
+				if (validate && !validate(parsed)) {
+					console.warn(`Ignoring invalid saved data for "${key}".`);
+					return null;
+				}
+				return parsed as T;
+			} catch (error) {
+				console.warn(`Ignoring unreadable saved data for "${key}":`, error);
+				return null;
 			}
+		}
+
+		try {
+			const parsed = decode(window.localStorage.getItem(key));
+			if (parsed !== null) setValue(parsed);
 		} catch (error) {
-			console.error(`Failed to load localStorage key "${key}":`, error);
+			console.warn(`Could not read browser storage for "${key}":`, error);
 		} finally {
 			setReady(true);
 		}
-	}, [key]);
 
-	// Save state whenever its value changes.
+		function onStorage(event: StorageEvent) {
+			if (
+				event.storageArea !== window.localStorage ||
+				(event.key !== key && event.key !== null)
+			)
+				return;
+			if (event.newValue === null) {
+				setValue(initialValueRef.current);
+				return;
+			}
+			const next = decode(event.newValue);
+			if (next !== null) setValue(next);
+		}
+		window.addEventListener("storage", onStorage);
+		return () => window.removeEventListener("storage", onStorage);
+	}, [key, validate]);
+
 	useEffect(() => {
 		if (!ready) return;
-
 		try {
 			window.localStorage.setItem(key, JSON.stringify(value));
 		} catch (error) {
-			console.error(`Failed to save localStorage key "${key}":`, error);
+			console.warn(`Could not save browser storage for "${key}":`, error);
 		}
 	}, [key, value, ready]);
 
