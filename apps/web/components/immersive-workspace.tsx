@@ -107,8 +107,8 @@ function resolvePaperSourceUrl(paper: Paper): string | null {
 		}
 	}
 	const doi = paper.doi?.trim();
-	if (doi && /^10\\.\\d{4,9}\\/[\\w.():;/-]+$/i.test(doi))
-		return `https://doi.org/${doi}`;
+	if (doi && doi.startsWith("10.") && doi.includes("/"))
+		return `https://doi.org/${encodeURIComponent(doi)}`;
 	return null;
 }
 
