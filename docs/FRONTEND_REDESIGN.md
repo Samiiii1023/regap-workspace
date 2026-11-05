@@ -49,3 +49,14 @@ This is a staged redesign of the real application, not an unrelated visual mock-
 ## Release standard
 
 Changes are developed in a feature branch. A milestone is not merged based on code review alone: GitHub CI, browser smoke tests, Vercel preview, contrast/keyboard/manual visual review, and intentional acceptance must all pass. A green build alone cannot certify visual quality. The production `main` branch remains stable between milestones.
+
+## Visual review package
+
+Every browser smoke run captures four screenshots from seeded *illustrative* research records:
+
+1. Night Lab at 1440 × 900.
+2. Daylight Lab at 1440 × 900.
+3. Night Lab at 390 × 844.
+4. Daylight Lab at 390 × 844.
+
+In GitHub Actions, open the latest successful **Re:Gap Browser Smoke** run, scroll to **Artifacts**, and download **observatory-visual-qa**. Screenshots are kept for 14 days. Review the screenshots alongside the Vercel preview in an actual browser: screenshots are reference evidence, not approval of responsive behavior or accessibility.
