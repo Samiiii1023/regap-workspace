@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import "./workspace.css";
+import "./observatory.css";
+import "./atlas.css";
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
@@ -15,9 +17,9 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-	title: "Re:Gap | Research Intelligence",
+	title: "Re:Gap | Research Atlas",
 	description:
-		"Connect literature, inspect limitations, explore research gaps, and plan evidence-driven experiments.",
+		"A research workspace for tracing literature, identifying evidence-linked gaps, and planning reproducible experiments.",
 };
 
 export default function RootLayout({

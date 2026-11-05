@@ -40,3 +40,11 @@ jobs:
           pnpm --filter web start >/tmp/regap-next-server.log 2>&1 &
       - name: Test real browser workflows
         run: node scripts/smoke-ui.mjs
+      - name: Upload visual QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: observatory-visual-qa
+          path: artifacts/observatory/*.png
+          if-no-files-found: ignore
+          retention-days: 14
