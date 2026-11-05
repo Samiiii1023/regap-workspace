@@ -67,7 +67,7 @@ const viewCopy: Record<
 		eyebrow: "RE:GAP / RESEARCH OBSERVATORY",
 		title: "Knowledge constellation.",
 		description:
-			"A considered space to investigate literature, trace evidence, and turn questions into experiments."
+			"A considered space to investigate literature, trace evidence, and turn questions into experiments.",
 	},
 	library: {
 		eyebrow: "LITERATURE / 01",
