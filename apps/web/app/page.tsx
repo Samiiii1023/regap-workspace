@@ -1,5 +1,5 @@
-import { ResearchWorkspace } from "@/components/research-workspace";
+import { ImmersiveWorkspace } from "@/components/immersive-workspace";
 
 export default function HomePage() {
-	return <ResearchWorkspace />;
+	return <ImmersiveWorkspace />;
 }
