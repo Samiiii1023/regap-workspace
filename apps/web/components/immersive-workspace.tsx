@@ -732,8 +732,8 @@ export function ImmersiveWorkspace() {
 						<div>
 							<strong>Re:Gap workspace</strong>
 							<span className="sidebar-footer-status">
-							Local prototype · Demo data
-						</span>
+								Local prototype · Demo data
+							</span>
 						</div>
 						<MoreHorizontal size={18} />
 					</div>
@@ -980,8 +980,8 @@ export function ImmersiveWorkspace() {
 													</span>
 													<span className="recent-paper-body">
 														<strong className="recent-paper-title">
-														{paper.title}
-													</strong>
+															{paper.title}
+														</strong>
 														<small>
 															{paper.venue} <span>·</span> {paper.year}
 														</small>
