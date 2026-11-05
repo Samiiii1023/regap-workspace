@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, FileText, Plus, X } from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import type { Gap, Paper } from "@/lib/demo-data";
 
 type AddGapDialogProps = {
@@ -10,11 +10,7 @@ type AddGapDialogProps = {
 	onCreate: (gap: Gap) => void;
 };
 
-export function AddGapDialog({
-	papers,
-	onClose,
-	onCreate,
-}: AddGapDialogProps) {
+export function AddGapDialog({ papers, onClose, onCreate }: AddGapDialogProps) {
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [nextStep, setNextStep] = useState("");
@@ -123,8 +119,8 @@ export function AddGapDialog({
 					<fieldset className="gap-source-fieldset">
 						<legend>Connect supporting papers</legend>
 						<p className="gap-source-intro">
-							Select at least one paper. Illustrative examples are not
-							verified sources.
+							Select at least one paper. Illustrative examples are not verified
+							sources.
 						</p>
 						<div className="gap-source-picker">
 							{papers.map((paper) => (

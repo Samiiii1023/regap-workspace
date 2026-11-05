@@ -300,9 +300,7 @@ export function ImmersiveWorkspace() {
 		inspection?.kind === "gap"
 			? gaps.find((gap) => gap.id === inspection.id)
 			: undefined;
-	const shortlistedGaps = gaps.filter((gap) =>
-		savedGapIds.includes(gap.id),
-	);
+	const shortlistedGaps = gaps.filter((gap) => savedGapIds.includes(gap.id));
 
 	useEffect(() => {
 		function onKeyDown(event: KeyboardEvent) {
@@ -792,9 +790,7 @@ export function ImmersiveWorkspace() {
 											<span>Candidate gaps</span>
 											<FolderSearch size={19} />
 										</div>
-										<strong>
-											{gaps.length.toString().padStart(2, "0")}
-										</strong>
+										<strong>{gaps.length.toString().padStart(2, "0")}</strong>
 										<p>Awaiting deeper validation</p>
 										<span className="metric-accent metric-accent--cyan" />
 									</div>
