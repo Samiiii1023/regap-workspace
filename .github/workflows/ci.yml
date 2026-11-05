@@ -37,11 +37,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check formatting and linting
-        run: pnpm exec biome ci .
-
       - name: Check types
         run: pnpm check-types
 
       - name: Build web app
         run: pnpm exec turbo run build --filter=web
+
+      - name: Check formatting and linting
+        run: pnpm exec biome ci .
