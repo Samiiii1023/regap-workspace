@@ -96,7 +96,6 @@ export function isGap(value: unknown): value is Gap {
 		hasText(value.nextStep, 1000) &&
 		value.confidence === "Needs validation" &&
 		Array.isArray(value.sourceIds) &&
-		value.sourceIds.length > 0 &&
 		value.sourceIds.length <= 100 &&
 		value.sourceIds.every((id: unknown) => hasText(id, 150)) &&
 		new Set(value.sourceIds).size === value.sourceIds.length
