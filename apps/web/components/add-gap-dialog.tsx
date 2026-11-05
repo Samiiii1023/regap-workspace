@@ -1,7 +1,8 @@
 "use client";
 
 import { CheckCircle2, FileText, Plus, X } from "lucide-react";
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, useState } from "react";
+import { useModalFocus } from "@/hooks/use-modal-focus";
 import type { Gap, Paper } from "@/lib/demo-data";
 
 type AddGapDialogProps = {
@@ -16,11 +17,7 @@ export function AddGapDialog({ papers, onClose, onCreate }: AddGapDialogProps) {
 	const [nextStep, setNextStep] = useState("");
 	const [sourceIds, setSourceIds] = useState<string[]>([]);
 	const [sourceError, setSourceError] = useState(false);
-	const titleRef = useRef<HTMLInputElement>(null);
-
-	useEffect(() => {
-		titleRef.current?.focus();
-	}, []);
+	const modalRef = useModalFocus<HTMLDivElement>(onClose);
 
 	function toggleSource(id: string) {
 		setSourceError(false);
@@ -58,6 +55,7 @@ export function AddGapDialog({ papers, onClose, onCreate }: AddGapDialogProps) {
 				onClick={onClose}
 			/>
 			<div
+				ref={modalRef}
 				className="workspace-modal"
 				role="dialog"
 				aria-modal="true"
@@ -86,7 +84,6 @@ export function AddGapDialog({ papers, onClose, onCreate }: AddGapDialogProps) {
 					<label>
 						Research question / gap title
 						<input
-							ref={titleRef}
 							required
 							maxLength={200}
 							value={title}
