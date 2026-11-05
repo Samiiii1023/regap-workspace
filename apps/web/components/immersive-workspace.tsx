@@ -332,7 +332,8 @@ export function ImmersiveWorkspace() {
 			if (
 				document.querySelector('[role="dialog"][aria-modal="true"]') &&
 				event.key !== "Escape"
-			) return;
+			)
+				return;
 			if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
 				event.preventDefault();
 				searchRef.current?.focus();
